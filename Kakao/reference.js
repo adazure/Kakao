@@ -99,87 +99,92 @@ Kakao.reference = {
     'constructor': {
         run: function() {
 
-                //Sayfa üzerindeki tüm referens nesnelerini arar
-                var n = reference.search();
-
-                //Arama sonucu gelen nesne boş veya liste sayısı 0'sa işlemi iptal et
-                if (!n || n.length == 0) return;
-
-                //İlgili nesne içerisinde tam istediğimiz ref- sınıf adı varsa alalım
-                var match = regx('ref\\-(' + objects.keys(markers.names).join('|') + ')\\-(\\w+)');
 
 
-                n.forEach(function(item, index) {
+        }, //Constructor
+        onload: function() {
 
-                    // Sıradaki nesneye ait sınıf değerleri içinde ilgili pattern modelini aratalım
-                    var get = item.className.match(match);
 
-                    //İstenilen pattern mutlaka en az 1 tane varsa işleme devam et
-                    if (get || get.length > 0) {
+            //Sayfa üzerindeki tüm referens nesnelerini arar
+            var n = reference.search();
 
-                        //Pattern değerine ait tüm değerleri sırasıyla işleme al
-                        get.forEach(function(a) {
+            //Arama sonucu gelen nesne boş veya liste sayısı 0'sa işlemi iptal et
+            if (!n || n.length == 0) return;
 
-                            /**
-                             * Gelen sıradaki veriyi parçalarına ayır
-                             * Çıktı:
-                             * ['ref-in-sınıfadi'],['in'],['sinifadi']
-                             */
-                            var grp = match.exec(a);
+            //İlgili nesne içerisinde tam istediğimiz ref- sınıf adı varsa alalım
+            var match = regx('ref\\-(' + objects.keys(markers.names).join('|') + ')\\-(\\w+)');
 
-                            //Regex Exec işleminden sonra regexin işlem index numarasını 0'a eşitliyoruz. Böylece sıradaki diğer işlem 0'ıncı karakterden başlayacak
-                            match.lastIndex = 0;
 
-                            //Eğer gelen bir grup değeri varsa işleme devam et
-                            if (grp) {
+            n.forEach(function(item, index) {
 
-                                //Daha sonradan tekrar kullanabilmek için ilgili sıradaki değerleri tabloya kaydet
-                                reference.table.push({ name: grp[2], ref: grp[1], obj: item });
+                // Sıradaki nesneye ait sınıf değerleri içinde ilgili pattern modelini aratalım
+                var get = item.className.match(match);
 
-                                //İlgili nesneden [0]'ncı değeri yani gelen ['ref-in-sınıfadi'] değerini siler
-                                item.classList.remove(grp[0]);
+                //İstenilen pattern mutlaka en az 1 tane varsa işleme devam et
+                if (get || get.length > 0) {
 
-                                //Bu nesneye daha önce getReference methodu eklenmemişse devam et
-                                if (!item.getReference) {
+                    //Pattern değerine ait tüm değerleri sırasıyla işleme al
+                    get.forEach(function(a) {
 
-                                    //getReference methodu oluştur ve varolan method ile eşle
-                                    item.getReference = reference.getReference;
+                        /**
+                         * Gelen sıradaki veriyi parçalarına ayır
+                         * Çıktı:
+                         * ['ref-in-sınıfadi'],['in'],['sinifadi']
+                         */
+                        var grp = match.exec(a);
 
-                                    //[sinifadi] değerini ilgili nesneye aktaralım
-                                    item.reffName = grp[2];
+                        //Regex Exec işleminden sonra regexin işlem index numarasını 0'a eşitliyoruz. Böylece sıradaki diğer işlem 0'ıncı karakterden başlayacak
+                        match.lastIndex = 0;
 
-                                    //İlgili nesne üzerinde oluşturulacak attribute özelliğine benzersiz veri atayalım
-                                    item.refixClsName = '-refix-cls-000' + Math.round(Math.random() * 99999);
+                        //Eğer gelen bir grup değeri varsa işleme devam et
+                        if (grp) {
 
-                                    item.setAttribute('data-refix-cls', ' ');
+                            //Daha sonradan tekrar kullanabilmek için ilgili sıradaki değerleri tabloya kaydet
+                            reference.table.push({ name: grp[2], ref: grp[1], obj: item });
 
-                                    //İşlemlerden sonra ilgili methodu ilkkez başlatalım
-                                    item.getReference(grp[1]);
-                                }
+                            //İlgili nesneden [0]'ncı değeri yani gelen ['ref-in-sınıfadi'] değerini siler
+                            item.classList.remove(grp[0]);
 
-                            } //EndIf
+                            //Bu nesneye daha önce getReference methodu eklenmemişse devam et
+                            if (!item.getReference) {
 
-                        }); //Foreach
+                                //getReference methodu oluştur ve varolan method ile eşle
+                                item.getReference = reference.getReference;
 
-                    } //EndIf
+                                //[sinifadi] değerini ilgili nesneye aktaralım
+                                item.reffName = grp[2];
+
+                                //İlgili nesne üzerinde oluşturulacak attribute özelliğine benzersiz veri atayalım
+                                item.refixClsName = '-refix-cls-000' + Math.round(Math.random() * 99999);
+
+                                item.setAttribute('data-refix-cls', ' ');
+
+                                //İşlemlerden sonra ilgili methodu ilkkez başlatalım
+                                item.getReference(grp[1]);
+                            }
+
+                        } //EndIf
+
+                    }); //Foreach
+
+                } //EndIf
+
+            });
+
+
+            //Sayfa üzerinde yeni bir nesne oluşturulduğunda tetiklenecek methodumuz
+            document._listen('DOMNodeInserted', function(e) {
+
+                reference.table.forEach(function(item, i) {
+
+                    item.obj.getReference(item.name);
 
                 });
 
-
-                //Sayfa üzerinde yeni bir nesne oluşturulduğunda tetiklenecek methodumuz
-                document._listen('DOMNodeInserted', function(e) {
-
-                    reference.table.forEach(function(item, i) {
-
-                        item.obj.getReference(item.name);
-
-                    });
-
-                });
+            });
 
 
-
-            } //Constructor
+        }
     }
 
 }

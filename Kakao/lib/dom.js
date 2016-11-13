@@ -123,9 +123,9 @@ Kakao.Dom = {
                      */
 
                     //Dom.attr nesnesinde gelen key değeri varsa DOM.attr[key]() methodunu çalıştır.
-                    if (DOM.attr[k]) {
+                    if (Dom.attr[k]) {
 
-                        DOM.attr[k](el, v);
+                        Dom.attr[k](el, v);
 
                     }
 
@@ -180,7 +180,7 @@ Kakao.Dom = {
             foreach(s, function(i, v, k) {
 
                 //key değerindeki a-z-A-Z aralığının dışındaki tüm karakterleri temizleyerek işleme alır
-                el.$css(k, v);
+                el.css(k, v);
 
             })
 

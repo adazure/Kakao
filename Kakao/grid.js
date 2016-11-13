@@ -69,6 +69,11 @@ Kakao.grid = {
 
         run: function() {
 
+
+
+        },
+        onload: function() {
+
             var _grids = document.querySelectorAll('[data-grid]');
             if (!_grids || _grids.length == 0) return;
 
@@ -147,8 +152,6 @@ Kakao.grid = {
                 }
 
             });
-
-
         }
 
     }

@@ -1,7 +1,7 @@
-var Kakao = (function() {
+//Kakao.js start
+(function() {
 
-    var self = this;
-    self.result = [];
+        Kakao = this;
+        Kakao.result = [];
 
-    return self;
-})()
+        //***************//

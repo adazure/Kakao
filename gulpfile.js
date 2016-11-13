@@ -23,7 +23,7 @@ gulp.task('concat', function() {
             './Kakao/markers.js',
             './Kakao/grid.js',
             './Kakao/groups.js',
-            './Kakao/start.js',
+            './Kakao/Start.js'
         ])
         .pipe(concat('Kakao.package.js'))
         .pipe(gulp.dest("./"))

@@ -1,25 +1,19 @@
 /**
  * Sayfa yüklenmeden önce yapılacak tüm işler ve çalıştırılacak methodlar
  */
-Kakao.start = (function() {
 
-    selectors.constructor.run();
-    markers.constructor.run();
+foreach(Kakao, function(a, b, c) {
 
-})()
-
-/**
- * Sayfa ve JS dökümanı yüklendiğinde yapılması iştenen işlemler burada yapılmaktadır
- */
-Kakao.load = function() {
-
-    reference.constructor.run();
-    grid.constructor.run();
-    selectors.constructor.onload();
-    groups.constructor.onload();
-
+if (b && b.constructor) {
+    if (b.constructor.run)
+        b.constructor.run();
+    if (b.constructor.onload)
+        window._listen('load', b.constructor.onload);
 }
 
+}); //Foreach
 
-//Sayfa yüklendiğinde
-window._listen('load', Kakao.load);
+
+
+//End Kakao.js
+})();
