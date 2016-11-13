@@ -882,7 +882,7 @@ Kakao.reference = {
 
 
     /**
-     * <param HTMLElement>
+     * <param HTMLElement Array>
      * <param [this,in,all,any]
      * Gelen type değerine göre markers.names[type] nesnesi içinde tanımlanan nesne listesi içinde arama yapar
      * Bu liste içerisinde ilgili HTMLElement nesnesinin class değerleri içindeki aynı olan değerleri alır
@@ -922,8 +922,7 @@ Kakao.reference = {
     getReference: function(refName) {
         var _self = this;
 
-
-        var n = document.querySelectorAll('[data-refix-cls] .' + _self.reffName);
+        var n = document.querySelectorAll('.' + _self.reffName);
         if (n && n.length > 0) {
             var _ref = reference.getSameClass(_self, refName);
 
@@ -937,11 +936,6 @@ Kakao.reference = {
 
 
     'constructor': {
-        run: function() {
-
-
-
-        }, //Constructor
         onload: function() {
 
 
@@ -1551,6 +1545,7 @@ Kakao.grid = {
 }
 Kakao.groups = {
 
+    table: [],
 
     //map, inline, table
     query: getOnlySelectors(),
@@ -1639,7 +1634,7 @@ Kakao.groups = {
             //Sayısal değerleri almak için - işaretinden parçalayalım
             var values = params[0].split('-');
 
-            //Sayısal değerleri alalım. 2. index kaydınran itibaren tüm kayıtları alalım
+            //Sayısal değerleri alalım. 2. index kaydından itibaren tüm kayıtları alalım
             values = values.slice(2, values.length);
 
             //Secici ifadeki silelim *-inline-*-*-* vs
@@ -1707,33 +1702,57 @@ Kakao.groups = {
             //Bulunan her bir nesneyi tek tek işleme al
             foreach(selectGroups, function(a, b, c) {
 
-                //Sıradaki nesnenin sınıf adlarının listesini string olarak al
-                var className = b.className || b.classList.value;
+                    //Sıradaki nesnenin sınıf adlarının listesini string olarak al
+                    var className = b.className || b.classList.value;
 
-                //-map-, -inline-, -table- gibi değerlerle nesneler bulunmuş olabilir ama yeterli değil
-                //ilgili nesnenin sınıf adlarında tam olarak bizim istediğimiz formatta bir sınıf adı varsa işleme alacağız
+                    //-map-, -inline-, -table- gibi değerlerle nesneler bulunmuş olabilir ama yeterli değil
+                    //ilgili nesnenin sınıf adlarında tam olarak bizim istediğimiz formatta bir sınıf adı varsa işleme alacağız
 
-                var match = className.match(groups.formatR);
+                    var match = className.match(groups.formatR);
 
-                //Eğer hiç bulunamamışsa bu nesne bize uygun değil demektir
-                if (match == null) return;
+                    //Eğer hiç bulunamamışsa bu nesne bize uygun değil demektir
+                    if (match == null) return;
 
+                    //Üzerinde işlem yapılan nesneler
+                    groups.table.push(b);
 
-                /**
-                 * Eğer gelen bir array liste varsa ve değer/değerler bulunmuşsa. Aşağıdaki gibi bir örnek çıktı verecektir
-                 * 
-                 * Array[2]
-                 *  0: "web-map-12-12"
-                 *  1: "tab-map-12-12"
-                 *  length: 2
-                 *  __proto__: Array[0]
-                 * 
-                 * Tek bir nesne içinde 2 kayıt bulunduğunu varsayarak ilerliyoruz
-                 */
+                    //İşlem yapıldığına dair işaret koyalım
+                    b.groupMatch = match;
+                    b.groupTrigger = function() {
+                        groups.applyMatch(match, b);
+                    }
 
-                groups.applyMatch(match, b);
+                    //İlgili nesnenin bağlı olduğuğu parent nesnesine group ibaresi ekleyelim
+                    b.parentNode.groups = true;
 
-            })
+                    /**
+                     * Eğer gelen bir array liste varsa ve değer/değerler bulunmuşsa. Aşağıdaki gibi bir örnek çıktı verecektir
+                     * 
+                     * Array[2]
+                     *  0: "web-map-12-12"
+                     *  1: "tab-map-12-12"
+                     *  length: 2
+                     *  __proto__: Array[0]
+                     * 
+                     * Tek bir nesne içinde 2 kayıt bulunduğunu varsayarak ilerliyoruz
+                     */
+
+                    groups.applyMatch(match, b);
+
+                }) //foreach
+
+            //Sayfa üzerinde yeni bir nesne oluşturulduğunda tetiklenecek methodumuz
+            document._listen('DOMNodeInserted', function(e) {
+
+                var tr = e.target.parentNode;
+                if (tr.groups) {
+                    foreach(tr.children, function(a, b) {
+                        if (b.groupTrigger)
+                            b.groupTrigger();
+                    })
+                }
+
+            });
 
         }
     }

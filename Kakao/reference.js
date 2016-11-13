@@ -42,7 +42,7 @@ Kakao.reference = {
 
 
     /**
-     * <param HTMLElement>
+     * <param HTMLElement Array>
      * <param [this,in,all,any]
      * Gelen type değerine göre markers.names[type] nesnesi içinde tanımlanan nesne listesi içinde arama yapar
      * Bu liste içerisinde ilgili HTMLElement nesnesinin class değerleri içindeki aynı olan değerleri alır
@@ -82,8 +82,7 @@ Kakao.reference = {
     getReference: function(refName) {
         var _self = this;
 
-
-        var n = document.querySelectorAll('[data-refix-cls] .' + _self.reffName);
+        var n = document.querySelectorAll('.' + _self.reffName);
         if (n && n.length > 0) {
             var _ref = reference.getSameClass(_self, refName);
 
@@ -97,11 +96,6 @@ Kakao.reference = {
 
 
     'constructor': {
-        run: function() {
-
-
-
-        }, //Constructor
         onload: function() {
 
 
