@@ -1545,8 +1545,6 @@ Kakao.grid = {
 }
 Kakao.groups = {
 
-    table: [],
-
     //map, inline, table
     query: getOnlySelectors(),
 
@@ -1713,8 +1711,6 @@ Kakao.groups = {
                     //Eğer hiç bulunamamışsa bu nesne bize uygun değil demektir
                     if (match == null) return;
 
-                    //Üzerinde işlem yapılan nesneler
-                    groups.table.push(b);
 
                     //İşlem yapıldığına dair işaret koyalım
                     b.groupMatch = match;
