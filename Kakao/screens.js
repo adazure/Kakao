@@ -10,8 +10,8 @@ Kakao.piece = 12;
 
 Kakao.screens = {
     'web': 0,
-    'tab': 980,
-    'mob': 728,
+    'tab': 800,
+    'mob': 640,
     'min': 480
 }
 
