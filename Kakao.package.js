@@ -1545,9 +1545,6 @@ Kakao.grid = {
 }
 Kakao.groups = {
 
-    //map, inline, table
-    query: getOnlySelectors(),
-
 
     //format : web-inline-6-6, tab-inline-12-12-5-1, tab-map-12-12
     formatR: regx('(' + objects.keys(screens).join('|') + ')\\-(' + getOnlySelectors().join('|') + ')(\\-\\d{1,2})+'),
@@ -1692,7 +1689,7 @@ Kakao.groups = {
             var keys = objects.keys(screens);
 
             //Format : [class*="-map-"], [class*="-inline-"], [class*="-table-"]
-            var queryvalue = repeat('[class*="-{}-"]', groups.query).join(',');
+            var queryvalue = repeat('[class*="-{}-"]', getOnlySelectors()).join(',');
 
             //Sayfa üzerinde ki -map-, -inline-, -table- gibi sınıf adlarına sahip nesneleri seçer
             var selectGroups = document.querySelectorAll(queryvalue);
