@@ -141,12 +141,6 @@ Kakao.groups = {
     },
 
     'constructor': {
-        run: function() {
-
-
-
-
-        },
         onload: function() {
 
 

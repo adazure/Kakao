@@ -67,11 +67,6 @@ Kakao.grid = {
 
     'constructor': {
 
-        run: function() {
-
-
-
-        },
         onload: function() {
 
             var _grids = document.querySelectorAll('[data-grid]');
