@@ -1164,7 +1164,7 @@ Kakao.selectors = {
             Kakao.result.push('[data-grid] .inline label {padding:3px; display:block; font-weight:bold;}');
             Kakao.result.push('[data-grid] .inline * {width:100%;}');
             Kakao.result.push('[data-grid] .inline.grid-col {padding:2px;}');
-            Kakao.result.push('[data-magnet] > * {width:33.3333%; float:left;}');
+            Kakao.result.push('[data-magnet] > * {width:20%; float:left;}');
         },
         //Sayfa yüklendiğinde yapılması istenen işler
         init: false
