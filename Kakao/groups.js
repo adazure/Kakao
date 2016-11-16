@@ -149,8 +149,9 @@ Kakao.groups = {
             //Sayfa üzerinde ki -map-, -inline-, -table- gibi sınıf adlarına sahip nesneleri seçer
             var selectGroups = document.querySelectorAll(queryvalue);
 
+            if (selectGroups && selectGroups.length > 0)
             //Bulunan her bir nesneyi tek tek işleme al
-            foreach(selectGroups, function(a, b, c) {
+                foreach(selectGroups, function(a, b, c) {
 
                     //Sıradaki nesnenin sınıf adlarının listesini string olarak al
                     var className = b.className || b.classList.value;

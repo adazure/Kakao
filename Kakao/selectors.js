@@ -127,11 +127,12 @@ Kakao.selectors = {
         before: function() {
             result.push('*{box-sizing:border-box};');
             result.push('.showinit{display:none};');
-            result.push('[data-grid] .inline {vertical-align:top;}');
+            result.push('[data-grid] .inline {vertical-align:top; width:25%;}');
             result.push('[data-grid="form"] .inline {vertical-align:text-bottom;}');
             result.push('[data-grid] .inline label {padding:3px; display:block; font-weight:bold;}');
             result.push('[data-grid] .inline * {width:100%;}');
             result.push('[data-grid] .inline.grid-col {padding:2px;}');
+            result.push('[data-magnet] > * {width:33.3333%; float:left;}');
         },
         //Sayfa yüklendiğinde yapılması istenen işler
         init: false
@@ -313,7 +314,8 @@ Kakao.selectors = {
         onload: function() {
 
             var d = document.querySelectorAll('.showinit');
-            if (d || d.length > 0) {
+
+            if (d && d.length > 0) {
                 foreach(d, function(a, b) {
                     b._removeClass('showinit');
                 });
