@@ -2,7 +2,6 @@
  * Sayfa yüklenmeden önce yapılacak tüm işler ve çalıştırılacak methodlar
  */
 
-console.log(Kakao.Dom);
 
 Kakao._for(Kakao, function(a, b, c) {
 
