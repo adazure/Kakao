@@ -8,10 +8,6 @@
  */
 Kakao._for = function foreach(arr, func, inx) {
 
-
-    console.log('----');
-    console.log(arr);
-
     /**
      * <param inx değeri varsayılan olarak 0'dır
      * param func ile işlem sırasında çalıştırarak geri değerleri döndürüyoruz
