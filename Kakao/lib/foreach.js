@@ -6,9 +6,11 @@
  * <param function> => döngü sırasında çalıştırılacak method
  * <param start index>  => döngünün kaçıncı index numarasından itibaren işleneceği
  */
-Kakao.foreach = function foreach(arr, func, inx) {
+Kakao._for = function foreach(arr, func, inx) {
 
 
+    console.log('----');
+    console.log(arr);
 
     /**
      * <param inx değeri varsayılan olarak 0'dır
@@ -17,7 +19,7 @@ Kakao.foreach = function foreach(arr, func, inx) {
     inx = inx || 0;
 
     //Sadece Object array tipinde nesneler
-    if (isObj(arr)) {
+    if (Kakao.isObj(arr)) {
 
         //Başlangıç index numarası
         var _index = 0,
@@ -46,7 +48,7 @@ Kakao.foreach = function foreach(arr, func, inx) {
     /**
      * Array tipi nesneler için ayıklama işlemi
      */
-    else if (isArr(arr)) {
+    else if (Kakao.isArr(arr)) {
 
         for (var i = inx, n = arr.length; i < n; i++) {
 

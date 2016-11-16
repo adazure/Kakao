@@ -19,7 +19,7 @@ Kakao.reference = {
         var _get = [];
 
         //İşaretleyici sayısınca döngü oluştur
-        foreach(markers.names, function(a, i, c) {
+        Kakao._for(Kakao.markers.names, function(a, i, c) {
 
             //Tanımlayıcı
             var ref = 'ref-' + c + '-';
@@ -44,22 +44,22 @@ Kakao.reference = {
     /**
      * <param HTMLElement Array>
      * <param [this,in,all,any]
-     * Gelen type değerine göre markers.names[type] nesnesi içinde tanımlanan nesne listesi içinde arama yapar
+     * Gelen type değerine göre Kakao.markers.names[type] nesnesi içinde tanımlanan nesne listesi içinde arama yapar
      * Bu liste içerisinde ilgili HTMLElement nesnesinin class değerleri içindeki aynı olan değerleri alır
      * Bulunan değerler [...] ilgili referans gösterilen nesnenin class değerlerine eklenmek üzere geri döndürülür
      */
     getSameClass: function(obj, type) {
 
         //Type değerinin "any" olması durumunda nesneye ait class değerlerinin tamamı geri döndürülür
-        if (!markers.names[type]) return obj.classList;
+        if (!Kakao.markers.names[type]) return obj.classList;
 
         //@Return nesnesi 
         var re = [];
 
         //Gelen type değerini ilgili nesne class değerleri içinde kontrol ederek benzer sınıf adlarını alalım
-        obj.classList.forEach(function(item, i) {
+        obj.classList.Kakao._for(function(item, i) {
 
-            if (markers.names[type].indexOf(item) != -1)
+            if (Kakao.markers.names[type].indexOf(item) != -1)
                 re.push(item);
         });
 
@@ -84,10 +84,10 @@ Kakao.reference = {
 
         var n = document.querySelectorAll('.' + _self.reffName);
         if (n && n.length > 0) {
-            var _ref = reference.getSameClass(_self, refName);
+            var _ref = Kakao.reference.getSameClass(_self, refName);
 
             if (_ref)
-                n.forEach(function(item, index) {
+                n.foreach(function(item, index) {
                     item._class(_ref);
                     item.classList.remove(_self.reffName);
                 });
@@ -100,13 +100,13 @@ Kakao.reference = {
 
 
             //Sayfa üzerindeki tüm referens nesnelerini arar
-            var n = reference.search();
+            var n = Kakao.reference.search();
 
             //Arama sonucu gelen nesne boş veya liste sayısı 0'sa işlemi iptal et
             if (!n || n.length == 0) return;
 
             //İlgili nesne içerisinde tam istediğimiz ref- sınıf adı varsa alalım
-            var match = regx('ref\\-(' + objects.keys(markers.names).join('|') + ')\\-(\\w+)');
+            var match = regx('ref\\-(' + objects.keys(Kakao.markers.names).join('|') + ')\\-(\\w+)');
 
 
             n.forEach(function(item, index) {
@@ -118,7 +118,7 @@ Kakao.reference = {
                 if (get || get.length > 0) {
 
                     //Pattern değerine ait tüm değerleri sırasıyla işleme al
-                    get.forEach(function(a) {
+                    get.Kakao._for(function(a) {
 
                         /**
                          * Gelen sıradaki veriyi parçalarına ayır
@@ -134,7 +134,7 @@ Kakao.reference = {
                         if (grp) {
 
                             //Daha sonradan tekrar kullanabilmek için ilgili sıradaki değerleri tabloya kaydet
-                            reference.table.push({ name: grp[2], ref: grp[1], obj: item });
+                            Kakao.reference.table.push({ name: grp[2], ref: grp[1], obj: item });
 
                             //İlgili nesneden [0]'ncı değeri yani gelen ['ref-in-sınıfadi'] değerini siler
                             item.classList.remove(grp[0]);
@@ -143,7 +143,7 @@ Kakao.reference = {
                             if (!item.getReference) {
 
                                 //getReference methodu oluştur ve varolan method ile eşle
-                                item.getReference = reference.getReference;
+                                item.getReference = Kakao.reference.getReference;
 
                                 //[sinifadi] değerini ilgili nesneye aktaralım
                                 item.reffName = grp[2];
@@ -169,7 +169,7 @@ Kakao.reference = {
             //Sayfa üzerinde yeni bir nesne oluşturulduğunda tetiklenecek methodumuz
             document._listen('DOMNodeInserted', function(e) {
 
-                reference.table.forEach(function(item, i) {
+                Kakao.reference.table.foreach(function(item, i) {
 
                     item.obj.getReference(item.name);
 

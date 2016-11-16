@@ -48,7 +48,7 @@ Kakao.Dom = {
          * Arguman nesnesi mutlak Object Array tipinde olmalı
          */
 
-        if (arr && isObj(arr)) {
+        if (arr && Kakao.isObj(arr)) {
 
 
             /**
@@ -56,7 +56,7 @@ Kakao.Dom = {
              * Döngü içerisinde de bir takım kontroller yapılıyor
              */
 
-            foreach(arr, function(i, v, k) {
+            Kakao._for(arr, function(i, v, k) {
 
 
 
@@ -76,7 +76,7 @@ Kakao.Dom = {
                  * elbette eğer geliştirici tarafından id özelliğine style özelliğinde olduğu gibi bir çok ad gönderilirse hata oluşacaktır
                  */
 
-                if (!isObj(v)) {
+                if (!Kakao.isObj(v)) {
 
                     /**
                      * Gelen b tipi Object Array tipinde olmadığı için
@@ -114,7 +114,7 @@ Kakao.Dom = {
                  * Bu yüzden işlem önceki kontrol ekliyoruz
                  * 
                  */
-                else if (isObj(v)) {
+                else if (Kakao.isObj(v)) {
 
                     /**
                      * Gelen key değeri bizim DOM.attr nesnesi içerisinde aynı ad'a sahip bir eleman var mı buna bakar
@@ -177,7 +177,7 @@ Kakao.Dom = {
 
         style: function(el, s) {
             //index,deger,ozellik
-            foreach(s, function(i, v, k) {
+            Kakao._for(s, function(i, v, k) {
 
                 //key değerindeki a-z-A-Z aralığının dışındaki tüm karakterleri temizleyerek işleme alır
                 el.css(k, v);

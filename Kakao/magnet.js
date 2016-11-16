@@ -1,6 +1,6 @@
 Kakao.magnets = {
 
-    'formatR': regx('(' + objects.keys(screens).join('|') + ')\-(\\d{1,2})'),
+    'formatR': Kakao.regx('(' + Kakao.objects.keys(Kakao.screens).join('|') + ')\-(\\d{1,2})'),
 
 
 
@@ -19,7 +19,7 @@ Kakao.magnets = {
 
             //data-magnet nesnesinin sayfa yüklendiği anda kaç parçaya ayrıldığı bilgisini tutar
             //Böylece sayfa her resize olduğunda buradaki değer ile parçalanması gereken değer aynıysa işlem yapılmayacak
-            piece: 0,
+            piece: 0
         }
 
         //Nesneye ait alt çocuklar
@@ -30,15 +30,15 @@ Kakao.magnets = {
             obj.children[0].remove();
         }
         //Maksimum parca sayısı ör : 4
-        var max = magnets.getMaxValues(screenSize, 'piece');
+        var max = Kakao.magnets.getMaxValues(screenSize, 'piece');
 
-        magnets.triggerResize(children, obj, screenSize, max);
+        Kakao.magnets.triggerResize(children, obj, screenSize, max);
 
         window._listen('resize', function() {
-            magnets.triggerResize(children, obj, screenSize, max);
+            Kakao.magnets.triggerResize(children, obj, screenSize, max);
         });
 
-        window._listen('DOMNodeInserted', function(a) { magnets.addNewMagnet(children, a); })
+        window._listen('DOMNodeInserted', function(a) { Kakao.magnets.addNewMagnet(children, a); })
 
     },
 
@@ -69,13 +69,16 @@ Kakao.magnets = {
          * 
          * Eğer 0 dan büyükse, tüm dilimlerin yüksekliklerini kontrol edip en küçük olanı alıyoruz
          */
+
+
+
         var e = o[0];
         var result = o[0].offsetHeight;
         if (result <= 0) return e
 
         for (var i in o) {
             if (o[i].offsetHeight < result) {
-                result = o.offsetHeight;
+                result = o[i].offsetHeight;
                 e = o[i];
             }
         }
@@ -110,7 +113,7 @@ Kakao.magnets = {
         var mgSet = parent.magnetSetting;
 
         //Varsa işlemi yap
-        if (mgSet && mgSet.status === true && !item.target.isMagnetAvaible && !item.target.classList.contains('magnet-item')) {
+        if (mgSet && mgSet.status === true && !item.target.isMagnetAvaible && !item.target.dataMagnetItem) {
 
 
             try {
@@ -129,7 +132,7 @@ Kakao.magnets = {
                 childrenList.push(cln);
 
                 //Son olarak da copyayı ekrana bastır
-                magnets.findLowestObject(parent.children).appendChild(cln);
+                Kakao.magnets.findLowestObject(parent.children).appendChild(cln);
 
             } catch (ex) {}
         }
@@ -140,30 +143,45 @@ Kakao.magnets = {
     //Tüm işlemleri burada yapıyoruz
     triggerResize: function(children, obj, screenSize, max) {
 
-        //data-magnet özelliğine sahip nesnenin o an ki parçalanmış alan sayısını alıyoruz
-        var set = obj.magnetSetting;
 
-        var doPiece = magnets.findScreenPiece(screenSize);
+
+        var pieceCount = Kakao.magnets.findScreenPiece(screenSize);
 
         //Ekran boyutlandırma sırasında parçalanma bilgisi değişirse uyguluyoruz
-        if (set.piece != doPiece) {
+        if (obj.magnetSetting.piece != pieceCount) {
 
 
-            //Nesnenin kendisine parçalanma bilgisini verelim
-            set.piece = doPiece;
+            /**
+             * data-magnet nesnesi içinde oluşan çocuk nesne sayısı değerini
+             * data-magnet nesnemizin setting özelliğine bildiriyoruz
+             * 
+             */
+            obj.magnetSetting.piece = pieceCount;
 
-            //Var olan kayıtları silelim
-            magnets.removeChildren(obj);
+            //data-magnet nesnesindeki tüm çocuk nesneleri temizleyelim
+            Kakao.magnets.removeChildren(obj);
 
 
-            //Oluşturulacak parça sayısı kadar nesne oluşturur
-            for (var n = 0; n < doPiece; n++) {
-                obj.appendChild(Dom.create('div')._class('magnet-item'));
+            /**
+             * data-magnet nesnesi icerisindeki tüm nesneleri sildikten sonra
+             * tekrardan istediğimiz parça sayısı kadar cocuk nesne oluşturuyoruz
+             */
+            for (var n = 0; n < pieceCount; n++) {
+                var u = Kakao.Dom.create('div');
+                u['dataMagnetItem'] = 'v.0.1';
+                obj.appendChild(u);
             }
 
-            //Hafızadaki tüm nesneler ilgili dilimlere aktarılıyor
+
+
+            /**
+             * Sayfa oluşturulurken bulunan nesneleri hafızaya kopyalamıstık.
+             * Kopyalanan bu nesneleri yeni oluşturduğumuz parcalara dağıtıyoruz
+             * Dağıtırken kullanılan mantık, en düşük yüksekliğe sahip nesneye sıradaki nesneyi aktarıyoruz
+             * 
+             */
             for (var c = 0; c < children.length; c++) {
-                var lowestHeightObj = magnets.findLowestObject(obj.children);
+                var lowestHeightObj = Kakao.magnets.findLowestObject(obj.children);
                 lowestHeightObj.appendChild(children[c]);
             }
 
@@ -202,8 +220,8 @@ Kakao.magnets = {
                 ['web-12', 'web', '12']
             ];
         else {
-            values = values.match(magnets.formatR);
-            magnets.formatR.lastIndex = 0;
+            values = values.match(Kakao.magnets.formatR);
+            Kakao.magnets.formatR.lastIndex = 0;
         }
         return values;
     },
@@ -241,8 +259,8 @@ Kakao.magnets = {
         for (var z = 0; z < matches.length; z++) {
 
             //Group Şeklinde alalım
-            var scrGroupItem = magnets.formatR.exec(matches[z]);
-            magnets.formatR.lastIndex = 0;
+            var scrGroupItem = Kakao.magnets.formatR.exec(matches[z]);
+            Kakao.magnets.formatR.lastIndex = 0;
 
 
             //İptal edelim
@@ -251,20 +269,20 @@ Kakao.magnets = {
 
 
             //Geliştirici tarafından verilen ekran boyut isimleri, screens nesnesi içindeki özellik adları kontrol ediliyor
-            if (screens.hasOwnProperty(scrGroupItem[1])) {
+            if (Kakao.screens.hasOwnProperty(scrGroupItem[1])) {
 
-                var num = screens[scrGroupItem[1]];
+                var num = Kakao.screens[scrGroupItem[1]];
                 if (num == 0)
                     num = 9999;
 
-                customScreen.push([num, piece / scrGroupItem[2]]);
+                customScreen.push([num, Kakao.piece / scrGroupItem[2]]);
 
             }
 
         } //For
 
         customScreen.sort(function(r, t) { return customScreen[t] - customScreen[r] });
-        //console.log(customScreen);
+
         return customScreen;
 
     },
@@ -286,6 +304,12 @@ Kakao.magnets = {
                     //Bulunan nesne sayısı kadar döngü oluştur
                     for (var i = 0; i < datamagnet.length; i++) {
 
+                        //data-magnet nesneleri sadece div olabilir
+                        if (datamagnet[i].tagName != 'DIV') {
+                            console.log('Data-magnet nesneleri sadece DIV elementi olabilir');
+                            return;
+                        };
+
                         /**
                          * Gelen screen boyutlarını alıyoruz
                          * Alınan bu bilgileri screen nesnesindeki değerlerle karşılaştıracağız
@@ -298,7 +322,7 @@ Kakao.magnets = {
                         var scr = y._attr('data-screen').toString();
 
                         //["web-4", "tab-6", "mob-12"]
-                        var scrMatch = magnets.getMatches(scr);
+                        var scrMatch = Kakao.magnets.getMatches(scr);
 
                         //Nesnemize ilgili sınıf değerlerini ekleyelim
                         y._class(scr.split(' '))._class(['in', 'map']);
@@ -306,10 +330,10 @@ Kakao.magnets = {
                         //Nesneden data-screen özelliğini kaldıralım
                         y._removeAttr('data-screen');
 
-                        var p = magnets.getResizeValues(scrMatch);
+                        var p = Kakao.magnets.getResizeValues(scrMatch);
 
                         if (p)
-                            new magnets.custommagnet(y, p);
+                            new Kakao.magnets.custommagnet(y, p);
 
 
                     }

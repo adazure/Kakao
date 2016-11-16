@@ -1,10 +1,12 @@
 //Kakao.js start
-(function() {
+var Kakao = (function() {
 
-        Kakao = this;
-        Kakao.result = [];
+    function Kakao() {
+        this.result = [];
+    }
 
-        //***************//
+    return new Kakao();
+})()
 Kakao.Dom = {
 
     /**
@@ -55,7 +57,7 @@ Kakao.Dom = {
          * Arguman nesnesi mutlak Object Array tipinde olmalı
          */
 
-        if (arr && isObj(arr)) {
+        if (arr && Kakao.isObj(arr)) {
 
 
             /**
@@ -63,7 +65,7 @@ Kakao.Dom = {
              * Döngü içerisinde de bir takım kontroller yapılıyor
              */
 
-            foreach(arr, function(i, v, k) {
+            Kakao._for(arr, function(i, v, k) {
 
 
 
@@ -83,7 +85,7 @@ Kakao.Dom = {
                  * elbette eğer geliştirici tarafından id özelliğine style özelliğinde olduğu gibi bir çok ad gönderilirse hata oluşacaktır
                  */
 
-                if (!isObj(v)) {
+                if (!Kakao.isObj(v)) {
 
                     /**
                      * Gelen b tipi Object Array tipinde olmadığı için
@@ -121,7 +123,7 @@ Kakao.Dom = {
                  * Bu yüzden işlem önceki kontrol ekliyoruz
                  * 
                  */
-                else if (isObj(v)) {
+                else if (Kakao.isObj(v)) {
 
                     /**
                      * Gelen key değeri bizim DOM.attr nesnesi içerisinde aynı ad'a sahip bir eleman var mı buna bakar
@@ -184,7 +186,7 @@ Kakao.Dom = {
 
         style: function(el, s) {
             //index,deger,ozellik
-            foreach(s, function(i, v, k) {
+            Kakao._for(s, function(i, v, k) {
 
                 //key değerindeki a-z-A-Z aralığının dışındaki tüm karakterleri temizleyerek işleme alır
                 el.css(k, v);
@@ -263,9 +265,11 @@ Kakao.filter = {
  * <param function> => döngü sırasında çalıştırılacak method
  * <param start index>  => döngünün kaçıncı index numarasından itibaren işleneceği
  */
-Kakao.foreach = function foreach(arr, func, inx) {
+Kakao._for = function foreach(arr, func, inx) {
 
 
+    console.log('----');
+    console.log(arr);
 
     /**
      * <param inx değeri varsayılan olarak 0'dır
@@ -274,7 +278,7 @@ Kakao.foreach = function foreach(arr, func, inx) {
     inx = inx || 0;
 
     //Sadece Object array tipinde nesneler
-    if (isObj(arr)) {
+    if (Kakao.isObj(arr)) {
 
         //Başlangıç index numarası
         var _index = 0,
@@ -303,7 +307,7 @@ Kakao.foreach = function foreach(arr, func, inx) {
     /**
      * Array tipi nesneler için ayıklama işlemi
      */
-    else if (isArr(arr)) {
+    else if (Kakao.isArr(arr)) {
 
         for (var i = inx, n = arr.length; i < n; i++) {
 
@@ -332,8 +336,8 @@ Kakao.format = function format(f) {
      */
 
     //a : index, b: value
-    foreach(arguments, function(a, b) {
-        f = f.replace(regx('\\{' + (a - 1) + '\\}'), b);
+    Kakao._for(arguments, function(a, b) {
+        f = f.replace(Kakao.regx('\\{' + (a - 1) + '\\}'), b);
     }, 1)
 
     return f;
@@ -360,9 +364,9 @@ Kakao.format = function format(f) {
 Kakao.repeat = function repeat(f) {
 
     if (arguments.length <= 1) return;
-    var args = isObj(arguments[1]) ? arguments[1] : filter.toArray(arguments, 1);
+    var args = Kakao.isObj(arguments[1]) ? arguments[1] : Kakao.filter.toArray(arguments, 1);
     var n = [];
-    foreach(args, function(a, b, c) {
+    Kakao._for(args, function(a, b, c) {
         n.push(f.replace('{}', b));
     });
 
@@ -431,8 +435,8 @@ Kakao.media = {
      * 
      */
     create: function(g, i) {
-        if (!isNum(g) || g < 1) return i;
-        return format('@media screen and (max-width:{0}px){{1}}', g, i);
+        if (!Kakao.isNum(g) || g < 1) return i;
+        return Kakao.format('@media screen and (max-width:{0}px){{1}}', g, i);
     }
 }
 /**
@@ -467,7 +471,7 @@ Kakao.objects = {
         for (var i in n) {
 
             //Özelliklerden sadece Object ve String tipindekileri alıyoruz. Yani fonksiyon olmayan değerleri.
-            if (!isFunc(n[i]))
+            if (!Kakao.isFunc(n[i]))
                 u.push(!tp ? i : n[i]);
         }
 
@@ -485,7 +489,7 @@ Kakao.objects = {
      * 
      */
     keys: function(i) {
-        return objects.key(i);
+        return Kakao.objects.key(i);
     },
 
 
@@ -508,7 +512,7 @@ Kakao.objects = {
          * Tip olarak da value değerlerini almamızı sağlamak için true değeri gönderiliyor
          * 
          */
-        return objects.key(i, true);
+        return Kakao.objects.key(i, true);
     },
 
     extend: function(obj1, obj2) {
@@ -585,7 +589,7 @@ Kakao.style = {
          */
 
 
-        foreach(list, function(a, b, c) {
+        Kakao._for(list, function(a, b, c) {
 
             //Obj nesnesinin gelen attr özelliği bulunup bir method gibi çalıştırılmaktadır.
             obj[attr](c, b);
@@ -630,7 +634,7 @@ Kakao.style = {
         if (arguments.length >= 2)
             arr = filter.toArray(arguments);
 
-        if (isObj(arr) || isArr(arr)) {
+        if (Kakao.isObj(arr) || Kakao.isArr(arr)) {
             arr.forEach(function(item) {
                 self.classList.add(item);
             })
@@ -674,7 +678,7 @@ Kakao.style = {
          * O bize değeri tekrar buraya tek tek gönderecek ve biz de işleyeceğiz
          */
 
-        if (isObj(name))
+        if (Kakao.isObj(name))
             style.each(this, name, 'css');
 
 
@@ -684,7 +688,7 @@ Kakao.style = {
          * O halde sadece ilgili nesnenin name özelliğinin değerini geriye döndür
          */
 
-        if (isStr(name) && !value) {
+        if (Kakao.isStr(name) && !value) {
 
 
             //Önce normal şekilde bak var mı, varsa döndür
@@ -709,12 +713,12 @@ Kakao.style = {
          */
 
 
-        if (isStr(name) && value) {
+        if (Kakao.isStr(name) && value) {
 
             //Örnek 'border-left-width' gibi gelen değeri 'borderLeftWidth' olarak değiştirir.
-            var y = filter.style(name);
+            var y = Kakao.filter.style(name);
 
-            this.style[y] = value + (isNum(value) ? style.isNumber[y] ? '' : 'px' : '');
+            this.style[y] = value + (Kakao.isNum(value) ? Kakao.style.isNumber[y] ? '' : 'px' : '');
         }
 
         //ilgili nesnenin kendisini tekrar geriye döndür
@@ -753,8 +757,8 @@ Kakao.style = {
          * O bize değeri tekrar buraya tek tek gönderecek ve biz de işleyeceğiz
          */
 
-        if (isObj(name))
-            style.each(this, name, 'attr');
+        if (Kakao.isObj(name))
+            Kakao.style.each(this, name, 'attr');
 
 
         /**
@@ -762,7 +766,7 @@ Kakao.style = {
          * O halde sadece ilgili nesnenin name özelliğinin değerini geriye döndür
          */
 
-        if (isStr(name) && !value)
+        if (Kakao.isStr(name) && !value)
             return this.getAttribute(name);
 
 
@@ -771,7 +775,7 @@ Kakao.style = {
          * name ve value özellikleri mutlak string ise
          * ilgili bilgileri ilgili nesne özelliğinde oluştur
          */
-        if (isStr(name) && isStr(value))
+        if (Kakao.isStr(name) && Kakao.isStr(value))
             this.setAttribute(name, value);
 
         //Her durumda nesnenin kendisini tekrar geriye döndür
@@ -814,7 +818,8 @@ Kakao.piece = 12;
  */
 
 Kakao.screens = {
-    'web': 0,
+    'all': 0,
+    'web': 980,
     'tab': 800,
     'mob': 640,
     'min': 480
@@ -833,10 +838,11 @@ Kakao.screens = {
  * 16.6667
  * 
  */
+
 Kakao.screenCalc = function(n) {
-    var z = (100 / piece * n),
+    var z = (100 / Kakao.piece * n),
         fixed = z % 1 === 0 ? 0 : 4;
-    return (100 / piece * n).toFixed(fixed);
+    return (100 / Kakao.piece * n).toFixed(fixed);
 }
 Kakao.reference = {
 
@@ -859,7 +865,7 @@ Kakao.reference = {
         var _get = [];
 
         //İşaretleyici sayısınca döngü oluştur
-        foreach(markers.names, function(a, i, c) {
+        Kakao._for(Kakao.markers.names, function(a, i, c) {
 
             //Tanımlayıcı
             var ref = 'ref-' + c + '-';
@@ -884,22 +890,22 @@ Kakao.reference = {
     /**
      * <param HTMLElement Array>
      * <param [this,in,all,any]
-     * Gelen type değerine göre markers.names[type] nesnesi içinde tanımlanan nesne listesi içinde arama yapar
+     * Gelen type değerine göre Kakao.markers.names[type] nesnesi içinde tanımlanan nesne listesi içinde arama yapar
      * Bu liste içerisinde ilgili HTMLElement nesnesinin class değerleri içindeki aynı olan değerleri alır
      * Bulunan değerler [...] ilgili referans gösterilen nesnenin class değerlerine eklenmek üzere geri döndürülür
      */
     getSameClass: function(obj, type) {
 
         //Type değerinin "any" olması durumunda nesneye ait class değerlerinin tamamı geri döndürülür
-        if (!markers.names[type]) return obj.classList;
+        if (!Kakao.markers.names[type]) return obj.classList;
 
         //@Return nesnesi 
         var re = [];
 
         //Gelen type değerini ilgili nesne class değerleri içinde kontrol ederek benzer sınıf adlarını alalım
-        obj.classList.forEach(function(item, i) {
+        obj.classList.Kakao._for(function(item, i) {
 
-            if (markers.names[type].indexOf(item) != -1)
+            if (Kakao.markers.names[type].indexOf(item) != -1)
                 re.push(item);
         });
 
@@ -924,10 +930,10 @@ Kakao.reference = {
 
         var n = document.querySelectorAll('.' + _self.reffName);
         if (n && n.length > 0) {
-            var _ref = reference.getSameClass(_self, refName);
+            var _ref = Kakao.reference.getSameClass(_self, refName);
 
             if (_ref)
-                n.forEach(function(item, index) {
+                n.foreach(function(item, index) {
                     item._class(_ref);
                     item.classList.remove(_self.reffName);
                 });
@@ -940,13 +946,13 @@ Kakao.reference = {
 
 
             //Sayfa üzerindeki tüm referens nesnelerini arar
-            var n = reference.search();
+            var n = Kakao.reference.search();
 
             //Arama sonucu gelen nesne boş veya liste sayısı 0'sa işlemi iptal et
             if (!n || n.length == 0) return;
 
             //İlgili nesne içerisinde tam istediğimiz ref- sınıf adı varsa alalım
-            var match = regx('ref\\-(' + objects.keys(markers.names).join('|') + ')\\-(\\w+)');
+            var match = regx('ref\\-(' + objects.keys(Kakao.markers.names).join('|') + ')\\-(\\w+)');
 
 
             n.forEach(function(item, index) {
@@ -958,7 +964,7 @@ Kakao.reference = {
                 if (get || get.length > 0) {
 
                     //Pattern değerine ait tüm değerleri sırasıyla işleme al
-                    get.forEach(function(a) {
+                    get.Kakao._for(function(a) {
 
                         /**
                          * Gelen sıradaki veriyi parçalarına ayır
@@ -974,7 +980,7 @@ Kakao.reference = {
                         if (grp) {
 
                             //Daha sonradan tekrar kullanabilmek için ilgili sıradaki değerleri tabloya kaydet
-                            reference.table.push({ name: grp[2], ref: grp[1], obj: item });
+                            Kakao.reference.table.push({ name: grp[2], ref: grp[1], obj: item });
 
                             //İlgili nesneden [0]'ncı değeri yani gelen ['ref-in-sınıfadi'] değerini siler
                             item.classList.remove(grp[0]);
@@ -983,7 +989,7 @@ Kakao.reference = {
                             if (!item.getReference) {
 
                                 //getReference methodu oluştur ve varolan method ile eşle
-                                item.getReference = reference.getReference;
+                                item.getReference = Kakao.reference.getReference;
 
                                 //[sinifadi] değerini ilgili nesneye aktaralım
                                 item.reffName = grp[2];
@@ -1009,7 +1015,7 @@ Kakao.reference = {
             //Sayfa üzerinde yeni bir nesne oluşturulduğunda tetiklenecek methodumuz
             document._listen('DOMNodeInserted', function(e) {
 
-                reference.table.forEach(function(item, i) {
+                Kakao.reference.table.foreach(function(item, i) {
 
                     item.obj.getReference(item.name);
 
@@ -1033,8 +1039,8 @@ Kakao.reference = {
 
 Kakao.getOnlySelectors = function() {
     var r = [];
-    for (var i in selectors) {
-        if (selectors[i].selector)
+    for (var i in Kakao.selectors) {
+        if (Kakao.selectors[i].selector && !Kakao.selectors[i].lock)
             r.push(i);
     }
     return r;
@@ -1054,8 +1060,8 @@ Kakao.selectors = {
         each: true,
         //Sayfa yüklenmeden önce yapılacak işler
         before: function() {
-            result.push('.map.this,.map.in>*{float:left; margin:0;}');
-            result.push('.map.in::before,.map.in::after{content:" "; display:block; clear:both;}');
+            Kakao.result.push('.map.this,.map.in>*{float:left; margin:0;}');
+            Kakao.result.push('.map.in::before,.map.in::after{content:" "; display:block; clear:both;}');
         },
     },
 
@@ -1075,9 +1081,9 @@ Kakao.selectors = {
         each: true,
         //Sayfa yüklenmeden önce yapılacak işler
         before: function() {
-            result.push('.inline.this,.inline.in>*{display:inline-block; vertical-align:top;}');
-            result.push('.inline.in>*{margin-right:-4px;}');
-            result.push('.inline.in::before,.inline.in::after{content:" "; display:block; clear:both;}');
+            Kakao.result.push('.inline.this,.inline.in>*{display:inline-block; vertical-align:top;}');
+            Kakao.result.push('.inline.in>*{margin-right:-4px;}');
+            Kakao.result.push('.inline.in::before,.inline.in::after{content:" "; display:block; clear:both;}');
 
         },
     },
@@ -1089,20 +1095,24 @@ Kakao.selectors = {
 
     'table': {
         //Kontroller sırasında seçici olarak işleme alınsın mı
-        selector: true,
+        selector: false,
         //This işaretleyicisi olsun mu
-        root: true,
+        root: false,
         //In işaretleyicisi olsun mu
-        children: true,
+        children: false,
         //Each değişkeni before ve init methodlarının Start dosyasında işleme alınıp alınmayacağı. Eğer true olursa methodlar çalıştırılır.
         //Şöyle söyleyelim. Before function methodu mevcut olabilir ama bazı durumlarda bunu yükletmek istemeyiz. Each değeri true ve before methodu varsa çalışır
-        each: true,
+        each: false,
         //Sayfa yüklenmeden önce yapılacak işler
         before: function() {
-            result.push('.table.this,.table.in{display:table}');
-            result.push('.table.in>*{display:table-cell;}');
+            Kakao.result.push('.table.this,.table.in{display:table}');
+            Kakao.result.push('.table.in>*{display:table-cell;}');
         },
     },
+
+
+
+
 
     /**
      * Burada tanımlanacak tüm bilgiler yada değerler, selector olarak işaretlenmiş...
@@ -1112,6 +1122,7 @@ Kakao.selectors = {
      * Bu değerler otomatik olarak eklenir.
      */
     'all': {
+        lock: true,
         //Sayfa yüklenmeden önce yapılacak işler
         before: function(name, arr) {
 
@@ -1127,7 +1138,7 @@ Kakao.selectors = {
             };
 
             for (var n in allDefaults) {
-                arr.push(format(".{0}-{1}{{2}}", name, n, allDefaults[n]));
+                arr.push(Kakao.format(".{0}-{1}{{2}}", name, n, allDefaults[n]));
             }
 
         },
@@ -1145,18 +1156,19 @@ Kakao.selectors = {
      * Ekran boyutlarından tamamen bağımsız kullanımı olan bilgiler tanımlanmalıdır
      */
     'default': {
+        lock: true,
         //Each değişkeni before ve init methodlarının Start dosyasında işleme alınıp alınmayacağı. Eğer true olursa methodlar çalıştırılır.
         each: true,
         //Sayfa yüklenmeden önce yapılacak işler
         before: function() {
-            result.push('*{box-sizing:border-box};');
-            result.push('.showinit{display:none};');
-            result.push('[data-grid] .inline {vertical-align:top; width:25%;}');
-            result.push('[data-grid="form"] .inline {vertical-align:text-bottom;}');
-            result.push('[data-grid] .inline label {padding:3px; display:block; font-weight:bold;}');
-            result.push('[data-grid] .inline * {width:100%;}');
-            result.push('[data-grid] .inline.grid-col {padding:2px;}');
-            result.push('[data-magnet] > * {width:33.3333%; float:left;}');
+            Kakao.result.push('*{box-sizing:border-box};');
+            Kakao.result.push('.showinit{display:none};');
+            Kakao.result.push('[data-grid] .inline {vertical-align:top; width:25%;}');
+            Kakao.result.push('[data-grid="form"] .inline {vertical-align:text-bottom;}');
+            Kakao.result.push('[data-grid] .inline label {padding:3px; display:block; font-weight:bold;}');
+            Kakao.result.push('[data-grid] .inline * {width:100%;}');
+            Kakao.result.push('[data-grid] .inline.grid-col {padding:2px;}');
+            Kakao.result.push('[data-magnet] > * {width:33.3333%; float:left;}');
         },
         //Sayfa yüklendiğinde yapılması istenen işler
         init: false
@@ -1173,6 +1185,7 @@ Kakao.selectors = {
      * 
      */
     'constructor': {
+        lock: true,
         run: function() {
 
             /**
@@ -1188,7 +1201,7 @@ Kakao.selectors = {
              * Şimdi aşağıda sırasıyla işlemleri başlatıyoruz
              */
 
-            foreach(selectors, function(i, v) {
+            Kakao._for(Kakao.selectors, function(i, v) {
 
                 //Before methodu varsa ve each değeriyle sorgulama işlemine alınmak isteniyorsa
                 if (v.before && v.each)
@@ -1231,13 +1244,13 @@ Kakao.selectors = {
              */
 
             //Tüm ekran boyutlarını tek tek ele alıyoruz
-            foreach(screens, function(a, b, key) {
+            Kakao._for(Kakao.screens, function(a, b, key) {
 
                 //İşlemler sırasında oluşturululan @media screen değerleri buraya kaydedilecek
                 var cache = [];
 
                 //Piece değeri kadar döngü oluşturur. Bilindiği üzere Piece değeri sayfada oluşturulacak maksimum parça değerini simgeler
-                for (var n = 1; n <= piece; n++) {
+                for (var n = 1; n <= Kakao.piece; n++) {
 
                     var z = [];
 
@@ -1249,14 +1262,14 @@ Kakao.selectors = {
                      * .map.this.web1
                      */
 
-                    for (var i in selectors) {
-                        var x = selectors[i];
+                    for (var i in Kakao.selectors) {
+                        var x = Kakao.selectors[i];
                         //console.log(x);
                         if (x.root && x.selector)
-                            z.push(format('.{0}.this.{1}{2}', i, key, n));
+                            z.push(Kakao.format('.{0}.this.{1}{2}', i, key, n));
 
                         if (x.children && x.selector)
-                            z.push(format('.{0}.in.{1}-{2}>*', i, key, n));
+                            z.push(Kakao.format('.{0}.in.{1}-{2}>*', i, key, n));
 
                     } //maps
 
@@ -1271,8 +1284,8 @@ Kakao.selectors = {
                      */
 
 
-                    cache.push(format('{0}{width:{1}%}', z.join(','), screenCalc(n)));
-                    //console.log(format('{0}{width:{1}%}', z.join(','), screenCalc(n)));
+                    cache.push(Kakao.format('{0}{width:{1}%}', z.join(','), Kakao.screenCalc(n)));
+                    //console.log(Kakao.format('{0}{width:{1}%}', z.join(','), screenCalc(n)));
 
 
 
@@ -1297,7 +1310,7 @@ Kakao.selectors = {
                  * web-hidden yada web-show, web-remove vs...
                  */
 
-                selectors.all.before(key, cache);
+                Kakao.selectors.all.before(key, cache);
 
 
 
@@ -1307,7 +1320,7 @@ Kakao.selectors = {
                  * Son olarak @media screen and ekran boyutumuzu oluşturuyoruz ve ilgili değerleri içerisine yüklüyoruz
                  * 
                  */
-                result.push(media.create(screens[key], cache.join('')));
+                Kakao.result.push(Kakao.media.create(Kakao.screens[key], cache.join('')));
 
 
 
@@ -1317,8 +1330,8 @@ Kakao.selectors = {
              * Sayfa üzerinde head kısmına <style></style> nesnesi oluşturuyoruz
              * Oluşturulan nesne içerisine Kakao.result değişkeni içindeki değerleri aktarıyoruz 
              */
-            var sty = Dom.create('style');
-            sty.innerHTML = result.join('');
+            var sty = Kakao.Dom.create('style');
+            sty.innerHTML = Kakao.result.join('');
             document.head.appendChild(sty);
 
 
@@ -1340,7 +1353,7 @@ Kakao.selectors = {
             var d = document.querySelectorAll('.showinit');
 
             if (d && d.length > 0) {
-                foreach(d, function(a, b) {
+                Kakao._for(d, function(a, b) {
                     b._removeClass('showinit');
                 });
             }
@@ -1369,24 +1382,24 @@ Kakao.markers = {
 
         run: function() {
 
-            for (var i in screens) {
+            for (var i in Kakao.screens) {
 
-                for (var n = 1; n <= piece; n++) {
+                for (var n = 1; n <= Kakao.piece; n++) {
                     //This
-                    markers.names['this'].push(i + n);
+                    Kakao.markers.names['this'].push(i + n);
                     //In
-                    markers.names['in'].push(i + '-' + n);
+                    Kakao.markers.names['in'].push(i + '-' + n);
                 }
             }
 
             //Defaults
-            markers.names.this.push('this');
-            markers.names.this = markers.names.this.concat(getOnlySelectors());
+            Kakao.markers.names.this.push('this');
+            Kakao.markers.names.this = Kakao.markers.names.this.concat(Kakao.getOnlySelectors());
 
-            markers.names.in.push('in');
-            markers.names.in = markers.names.in.concat(getOnlySelectors());
+            Kakao.markers.names.in.push('in');
+            Kakao.markers.names.in = Kakao.markers.names.in.concat(Kakao.getOnlySelectors());
 
-            markers.names.all = markers.names.all.concat(markers.names.this, markers.names.in);
+            Kakao.markers.names.all = Kakao.markers.names.all.concat(Kakao.markers.names.this, Kakao.markers.names.in);
 
         }
     }
@@ -1398,8 +1411,8 @@ Kakao.grid = {
      * Row nesneleri içerisinde yeni column nesneler oluşturmaktadır
      */
     createCol: function(a) {
-        var e = Dom.create('div');
-        grid.createLabel(a, e);
+        var e = Kakao.Dom.create('div');
+        Kakao.grid.createLabel(a, e);
         e.appendChild(a);
         return e;
     },
@@ -1413,7 +1426,7 @@ Kakao.grid = {
         if (lbl) {
 
             //Label oluştur
-            var c = Dom.create('label')
+            var c = Kakao.Dom.create('label')
                 ._class('data-col-label')
                 ._removeAttr('data-label');
 
@@ -1454,7 +1467,7 @@ Kakao.grid = {
     //Children nesnelere toplu değer atamaları yapılır
     addClassToChildren: function(children) {
         for (var i = 0; i < children.length; i++) {
-            children[i]._class(filter.toArray(arguments, 1));
+            children[i]._class(Kakao.filter.toArray(arguments, 1));
         }
     },
 
@@ -1478,7 +1491,7 @@ Kakao.grid = {
                 var length = children.length;
 
                 //Oluşturulacak her bir grid satır nesnesi
-                var rows = Dom.create('div')._class('data-row');
+                var rows = Kakao.Dom.create('div')._class('data-row');
 
                 var colCount = 0;
 
@@ -1506,24 +1519,24 @@ Kakao.grid = {
                         maxRowCount = rowNumber;
 
                         //Yeni bir satır oluşturmadan önce işlediğin tüm nesnelere sabit tanımlı sınıf isimlerini ata
-                        grid.addClassToChildren(rows.children, 'inline', 'this', 'grid-col');
+                        Kakao.grid.addClassToChildren(rows.children, 'inline', 'this', 'grid-col');
 
                         //İşlenen nesneleri grid nesnesi içine yeni satır olarak ekle
                         a.appendChild(rows);
 
                         //İlgili nesnede data-screen değerleri varsa uygular, eğer yoksa sütun sayısına eşitler
-                        grid.addScreen(rows.children);
+                        Kakao.grid.addScreen(rows.children);
 
 
                         //Sonraki satır için yeni row oluştur
-                        rows = Dom.create('div')._class('data-row');
+                        rows = Kakao.Dom.create('div')._class('data-row');
 
                         //İşlenen sütun sayısını sıfırla
                         colCount = 0;
                     }
 
                     //Hangi satırdaysak, ilgili seçili nesneyi sıradaki satır nesnesine aktar.
-                    rows.appendChild(grid.createCol(item));
+                    rows.appendChild(Kakao.grid.createCol(item));
 
                     //İşlem bittikten sonra, bu nesne ile ilişkisinin bittiğine dair length değeri 1 eksiltiliyor
                     length--;
@@ -1531,10 +1544,10 @@ Kakao.grid = {
                     //Eğer length değeri 0 ise ve eğer işlenmiş 1,2 kayıt varsa da onları da ekle
                     if (length == 0) {
 
-                        grid.addClassToChildren(rows.children, 'inline', 'this', 'grid-col');
+                        Kakao.grid.addClassToChildren(rows.children, 'inline', 'this', 'grid-col');
 
                         //İlgili nesnede data-screen değerleri varsa uygular, eğer yoksa sütun sayısına eşitler
-                        grid.addScreen(rows.children);
+                        Kakao.grid.addScreen(rows.children);
 
                         a.appendChild(rows);
                     }
@@ -1549,12 +1562,12 @@ Kakao.groups = {
 
 
     //format : web-inline-6-6, tab-inline-12-12-5-1, tab-map-12-12
-    formatR: regx('(' + objects.keys(screens).join('|') + ')\\-(' + getOnlySelectors().join('|') + ')(\\-\\d{1,2})+'),
+    formatR: Kakao.regx('(' + Kakao.objects.keys(Kakao.screens).join('|') + ')\\-(' + Kakao.getOnlySelectors().join('|') + ')(\\-\\d{1,2})+'),
 
 
     applyChildren: function(objs, params, values) {
-        foreach(objs, function(a, b, c) {
-            groups.applyChild(b, params, values);
+        Kakao._for(objs, function(a, b, c) {
+            Kakao.groups.applyChild(b, params, values);
 
         });
     },
@@ -1606,7 +1619,7 @@ Kakao.groups = {
     applyMatch: function(match, obj) {
 
 
-        foreach(match, function(a, b, c) {
+        Kakao._for(match, function(a, b, c) {
 
             /**
              * b parametresinden gelen değeri exec ile grouplara ayıralım
@@ -1620,10 +1633,10 @@ Kakao.groups = {
              * group3 : 6
              */
 
-            var params = groups.formatR.exec(b);
+            var params = Kakao.groups.formatR.exec(b);
 
             //Regex nesne formatımız sabit olduğundan, yani new RegExp demediğimiz için formatın sorgu sırasını 0'a çekiyoruz
-            groups.formatR.lastIndex = 0;
+            Kakao.groups.formatR.lastIndex = 0;
 
             //Eğer formata uygun değilse iptal et
             if (!params) return;
@@ -1646,7 +1659,7 @@ Kakao.groups = {
              */
 
             if (!next) {
-                groups.applyChild(obj, params, values);
+                Kakao.groups.applyChild(obj, params, values);
             }
 
 
@@ -1659,7 +1672,7 @@ Kakao.groups = {
                     next = obj.parentNode.children.length;
 
                 //Değilse sadece belirli sayı aralığındakileri seçelim
-                else if (next && isNum(next))
+                else if (next && Kakao.isNum(next))
                     next = parseInt(next);
 
                 //0dan büyük bir değer olmalı
@@ -1674,7 +1687,7 @@ Kakao.groups = {
                     //Şimdi de nesnemizin bulunduğu pozisyondan kaç tanesi bu durumdan etkilenecekse, bu grubun listesini ver
                     var t = children.slice(currentIndex, currentIndex + parseInt(next) + 1);
 
-                    groups.applyChildren(t, params, values);
+                    Kakao.groups.applyChildren(t, params, values);
 
                 }
             }
@@ -1688,17 +1701,17 @@ Kakao.groups = {
 
 
             //web, tab, mob, min
-            var keys = objects.keys(screens);
+            var keys = Kakao.objects.keys(Kakao.screens);
 
             //Format : [class*="-map-"], [class*="-inline-"], [class*="-table-"]
-            var queryvalue = repeat('[class*="-{}-"]', getOnlySelectors()).join(',');
+            var queryvalue = Kakao.repeat('[class*="-{}-"]', Kakao.getOnlySelectors()).join(',');
 
             //Sayfa üzerinde ki -map-, -inline-, -table- gibi sınıf adlarına sahip nesneleri seçer
             var selectGroups = document.querySelectorAll(queryvalue);
 
             if (selectGroups && selectGroups.length > 0)
             //Bulunan her bir nesneyi tek tek işleme al
-                foreach(selectGroups, function(a, b, c) {
+                Kakao._for(selectGroups, function(a, b, c) {
 
                     //Sıradaki nesnenin sınıf adlarının listesini string olarak al
                     var className = b.className || b.classList.value;
@@ -1706,7 +1719,7 @@ Kakao.groups = {
                     //-map-, -inline-, -table- gibi değerlerle nesneler bulunmuş olabilir ama yeterli değil
                     //ilgili nesnenin sınıf adlarında tam olarak bizim istediğimiz formatta bir sınıf adı varsa işleme alacağız
 
-                    var match = className.match(groups.formatR);
+                    var match = className.match(Kakao.groups.formatR);
 
                     //Eğer hiç bulunamamışsa bu nesne bize uygun değil demektir
                     if (match == null) return;
@@ -1715,7 +1728,7 @@ Kakao.groups = {
                     //İşlem yapıldığına dair işaret koyalım
                     b.groupMatch = match;
                     b.groupTrigger = function() {
-                        groups.applyMatch(match, b);
+                        Kakao.groups.applyMatch(match, b);
                     }
 
                     //İlgili nesnenin bağlı olduğuğu parent nesnesine group ibaresi ekleyelim
@@ -1733,7 +1746,7 @@ Kakao.groups = {
                      * Tek bir nesne içinde 2 kayıt bulunduğunu varsayarak ilerliyoruz
                      */
 
-                    groups.applyMatch(match, b);
+                    Kakao.groups.applyMatch(match, b);
 
                 }) //foreach
 
@@ -1742,7 +1755,7 @@ Kakao.groups = {
 
                 var tr = e.target.parentNode;
                 if (tr.groups) {
-                    foreach(tr.children, function(a, b) {
+                    Kakao._for(tr.children, function(a, b) {
                         if (b.groupTrigger)
                             b.groupTrigger();
                     })
@@ -1755,7 +1768,7 @@ Kakao.groups = {
 }
 Kakao.magnets = {
 
-    'formatR': regx('(' + objects.keys(screens).join('|') + ')\-(\\d{1,2})'),
+    'formatR': Kakao.regx('(' + Kakao.objects.keys(Kakao.screens).join('|') + ')\-(\\d{1,2})'),
 
 
 
@@ -1774,7 +1787,7 @@ Kakao.magnets = {
 
             //data-magnet nesnesinin sayfa yüklendiği anda kaç parçaya ayrıldığı bilgisini tutar
             //Böylece sayfa her resize olduğunda buradaki değer ile parçalanması gereken değer aynıysa işlem yapılmayacak
-            piece: 0,
+            piece: 0
         }
 
         //Nesneye ait alt çocuklar
@@ -1785,15 +1798,15 @@ Kakao.magnets = {
             obj.children[0].remove();
         }
         //Maksimum parca sayısı ör : 4
-        var max = magnets.getMaxValues(screenSize, 'piece');
+        var max = Kakao.magnets.getMaxValues(screenSize, 'piece');
 
-        magnets.triggerResize(children, obj, screenSize, max);
+        Kakao.magnets.triggerResize(children, obj, screenSize, max);
 
         window._listen('resize', function() {
-            magnets.triggerResize(children, obj, screenSize, max);
+            Kakao.magnets.triggerResize(children, obj, screenSize, max);
         });
 
-        window._listen('DOMNodeInserted', function(a) { magnets.addNewMagnet(children, a); })
+        window._listen('DOMNodeInserted', function(a) { Kakao.magnets.addNewMagnet(children, a); })
 
     },
 
@@ -1824,13 +1837,16 @@ Kakao.magnets = {
          * 
          * Eğer 0 dan büyükse, tüm dilimlerin yüksekliklerini kontrol edip en küçük olanı alıyoruz
          */
+
+
+
         var e = o[0];
         var result = o[0].offsetHeight;
         if (result <= 0) return e
 
         for (var i in o) {
             if (o[i].offsetHeight < result) {
-                result = o.offsetHeight;
+                result = o[i].offsetHeight;
                 e = o[i];
             }
         }
@@ -1865,7 +1881,7 @@ Kakao.magnets = {
         var mgSet = parent.magnetSetting;
 
         //Varsa işlemi yap
-        if (mgSet && mgSet.status === true && !item.target.isMagnetAvaible && !item.target.classList.contains('magnet-item')) {
+        if (mgSet && mgSet.status === true && !item.target.isMagnetAvaible && !item.target.dataMagnetItem) {
 
 
             try {
@@ -1884,7 +1900,7 @@ Kakao.magnets = {
                 childrenList.push(cln);
 
                 //Son olarak da copyayı ekrana bastır
-                magnets.findLowestObject(parent.children).appendChild(cln);
+                Kakao.magnets.findLowestObject(parent.children).appendChild(cln);
 
             } catch (ex) {}
         }
@@ -1895,30 +1911,45 @@ Kakao.magnets = {
     //Tüm işlemleri burada yapıyoruz
     triggerResize: function(children, obj, screenSize, max) {
 
-        //data-magnet özelliğine sahip nesnenin o an ki parçalanmış alan sayısını alıyoruz
-        var set = obj.magnetSetting;
 
-        var doPiece = magnets.findScreenPiece(screenSize);
+
+        var pieceCount = Kakao.magnets.findScreenPiece(screenSize);
 
         //Ekran boyutlandırma sırasında parçalanma bilgisi değişirse uyguluyoruz
-        if (set.piece != doPiece) {
+        if (obj.magnetSetting.piece != pieceCount) {
 
 
-            //Nesnenin kendisine parçalanma bilgisini verelim
-            set.piece = doPiece;
+            /**
+             * data-magnet nesnesi içinde oluşan çocuk nesne sayısı değerini
+             * data-magnet nesnemizin setting özelliğine bildiriyoruz
+             * 
+             */
+            obj.magnetSetting.piece = pieceCount;
 
-            //Var olan kayıtları silelim
-            magnets.removeChildren(obj);
+            //data-magnet nesnesindeki tüm çocuk nesneleri temizleyelim
+            Kakao.magnets.removeChildren(obj);
 
 
-            //Oluşturulacak parça sayısı kadar nesne oluşturur
-            for (var n = 0; n < doPiece; n++) {
-                obj.appendChild(Dom.create('div')._class('magnet-item'));
+            /**
+             * data-magnet nesnesi icerisindeki tüm nesneleri sildikten sonra
+             * tekrardan istediğimiz parça sayısı kadar cocuk nesne oluşturuyoruz
+             */
+            for (var n = 0; n < pieceCount; n++) {
+                var u = Kakao.Dom.create('div');
+                u['dataMagnetItem'] = 'v.0.1';
+                obj.appendChild(u);
             }
 
-            //Hafızadaki tüm nesneler ilgili dilimlere aktarılıyor
+
+
+            /**
+             * Sayfa oluşturulurken bulunan nesneleri hafızaya kopyalamıstık.
+             * Kopyalanan bu nesneleri yeni oluşturduğumuz parcalara dağıtıyoruz
+             * Dağıtırken kullanılan mantık, en düşük yüksekliğe sahip nesneye sıradaki nesneyi aktarıyoruz
+             * 
+             */
             for (var c = 0; c < children.length; c++) {
-                var lowestHeightObj = magnets.findLowestObject(obj.children);
+                var lowestHeightObj = Kakao.magnets.findLowestObject(obj.children);
                 lowestHeightObj.appendChild(children[c]);
             }
 
@@ -1957,8 +1988,8 @@ Kakao.magnets = {
                 ['web-12', 'web', '12']
             ];
         else {
-            values = values.match(magnets.formatR);
-            magnets.formatR.lastIndex = 0;
+            values = values.match(Kakao.magnets.formatR);
+            Kakao.magnets.formatR.lastIndex = 0;
         }
         return values;
     },
@@ -1996,8 +2027,8 @@ Kakao.magnets = {
         for (var z = 0; z < matches.length; z++) {
 
             //Group Şeklinde alalım
-            var scrGroupItem = magnets.formatR.exec(matches[z]);
-            magnets.formatR.lastIndex = 0;
+            var scrGroupItem = Kakao.magnets.formatR.exec(matches[z]);
+            Kakao.magnets.formatR.lastIndex = 0;
 
 
             //İptal edelim
@@ -2006,20 +2037,20 @@ Kakao.magnets = {
 
 
             //Geliştirici tarafından verilen ekran boyut isimleri, screens nesnesi içindeki özellik adları kontrol ediliyor
-            if (screens.hasOwnProperty(scrGroupItem[1])) {
+            if (Kakao.screens.hasOwnProperty(scrGroupItem[1])) {
 
-                var num = screens[scrGroupItem[1]];
+                var num = Kakao.screens[scrGroupItem[1]];
                 if (num == 0)
                     num = 9999;
 
-                customScreen.push([num, piece / scrGroupItem[2]]);
+                customScreen.push([num, Kakao.piece / scrGroupItem[2]]);
 
             }
 
         } //For
 
         customScreen.sort(function(r, t) { return customScreen[t] - customScreen[r] });
-        //console.log(customScreen);
+
         return customScreen;
 
     },
@@ -2041,6 +2072,12 @@ Kakao.magnets = {
                     //Bulunan nesne sayısı kadar döngü oluştur
                     for (var i = 0; i < datamagnet.length; i++) {
 
+                        //data-magnet nesneleri sadece div olabilir
+                        if (datamagnet[i].tagName != 'DIV') {
+                            console.log('Data-magnet nesneleri sadece DIV elementi olabilir');
+                            return;
+                        };
+
                         /**
                          * Gelen screen boyutlarını alıyoruz
                          * Alınan bu bilgileri screen nesnesindeki değerlerle karşılaştıracağız
@@ -2053,7 +2090,7 @@ Kakao.magnets = {
                         var scr = y._attr('data-screen').toString();
 
                         //["web-4", "tab-6", "mob-12"]
-                        var scrMatch = magnets.getMatches(scr);
+                        var scrMatch = Kakao.magnets.getMatches(scr);
 
                         //Nesnemize ilgili sınıf değerlerini ekleyelim
                         y._class(scr.split(' '))._class(['in', 'map']);
@@ -2061,10 +2098,10 @@ Kakao.magnets = {
                         //Nesneden data-screen özelliğini kaldıralım
                         y._removeAttr('data-screen');
 
-                        var p = magnets.getResizeValues(scrMatch);
+                        var p = Kakao.magnets.getResizeValues(scrMatch);
 
                         if (p)
-                            new magnets.custommagnet(y, p);
+                            new Kakao.magnets.custommagnet(y, p);
 
 
                     }
@@ -2075,21 +2112,63 @@ Kakao.magnets = {
     }
 }
 /**
+ * Geliştirici tarafından ayarlamalar verilirse bunları da ilgili datalara aktaralım
+ */
+var KS = null;
+try {
+
+    var KS = document.querySelector('script[src*="Kakao.package"]');
+    KS = KS ? eval(KS._attr('data-setting'))[0] : KakaoSetting;
+    if (KS && Kakao.isObj(KS)) {
+
+        try {
+
+            if (KS.Screens && Kakao.isObj(KS)) {
+                for (var n in KS.Screens)
+                    if (Kakao.screens.hasOwnProperty(n))
+                        Kakao.screens[n] = parseInt(KS.Screens)
+            }
+
+            if (KS.Piece && Kakao.isNum(KS.Piece))
+                Kakao.piece = KS.Piece;
+
+            if (KS.Selectors && Kakao.isObj(KS.Selectors)) {
+
+                for (var n in KS.Selectors)
+                    if (Kakao.selectors.hasOwnProperty(n) && !Kakao.selectors.lock) {
+                        var x = KS.Selectors[n];
+                        Kakao.selectors[n].selector = x;
+                        Kakao.selectors[n].root = x;
+                        Kakao.selectors[n].children = x;
+                        Kakao.selectors[n].children = x;
+                        Kakao.selectors[n].each = x;
+                    }
+
+            }
+
+
+        } catch (error) {
+            console.log('Kakao Setting nesnesinde hata var');
+            console.log(error);
+            console.log(KS);
+        }
+
+    }
+
+} catch (error) {}
+/**
  * Sayfa yüklenmeden önce yapılacak tüm işler ve çalıştırılacak methodlar
  */
 
-foreach(Kakao, function(a, b, c) {
+console.log(Kakao.Dom);
 
-if (b && b.constructor) {
-    if (b.constructor.run)
-        b.constructor.run();
-    if (b.constructor.onload)
-        window._listen('load', b.constructor.onload);
-}
+Kakao._for(Kakao, function(a, b, c) {
+
+    if (b && b.constructor) {
+        if (b.constructor.run)
+            b.constructor.run();
+        if (b.constructor.onload)
+            window._listen('load', b.constructor.onload);
+    }
 
 }); //Foreach
-
-
-
-//End Kakao.js
-})();

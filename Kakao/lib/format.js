@@ -15,8 +15,8 @@ Kakao.format = function format(f) {
      */
 
     //a : index, b: value
-    foreach(arguments, function(a, b) {
-        f = f.replace(regx('\\{' + (a - 1) + '\\}'), b);
+    Kakao._for(arguments, function(a, b) {
+        f = f.replace(Kakao.regx('\\{' + (a - 1) + '\\}'), b);
     }, 1)
 
     return f;
@@ -43,9 +43,9 @@ Kakao.format = function format(f) {
 Kakao.repeat = function repeat(f) {
 
     if (arguments.length <= 1) return;
-    var args = isObj(arguments[1]) ? arguments[1] : filter.toArray(arguments, 1);
+    var args = Kakao.isObj(arguments[1]) ? arguments[1] : Kakao.filter.toArray(arguments, 1);
     var n = [];
-    foreach(args, function(a, b, c) {
+    Kakao._for(args, function(a, b, c) {
         n.push(f.replace('{}', b));
     });
 

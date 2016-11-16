@@ -9,8 +9,8 @@
 
 Kakao.getOnlySelectors = function() {
     var r = [];
-    for (var i in selectors) {
-        if (selectors[i].selector)
+    for (var i in Kakao.selectors) {
+        if (Kakao.selectors[i].selector && !Kakao.selectors[i].lock)
             r.push(i);
     }
     return r;
@@ -30,8 +30,8 @@ Kakao.selectors = {
         each: true,
         //Sayfa yüklenmeden önce yapılacak işler
         before: function() {
-            result.push('.map.this,.map.in>*{float:left; margin:0;}');
-            result.push('.map.in::before,.map.in::after{content:" "; display:block; clear:both;}');
+            Kakao.result.push('.map.this,.map.in>*{float:left; margin:0;}');
+            Kakao.result.push('.map.in::before,.map.in::after{content:" "; display:block; clear:both;}');
         },
     },
 
@@ -51,9 +51,9 @@ Kakao.selectors = {
         each: true,
         //Sayfa yüklenmeden önce yapılacak işler
         before: function() {
-            result.push('.inline.this,.inline.in>*{display:inline-block; vertical-align:top;}');
-            result.push('.inline.in>*{margin-right:-4px;}');
-            result.push('.inline.in::before,.inline.in::after{content:" "; display:block; clear:both;}');
+            Kakao.result.push('.inline.this,.inline.in>*{display:inline-block; vertical-align:top;}');
+            Kakao.result.push('.inline.in>*{margin-right:-4px;}');
+            Kakao.result.push('.inline.in::before,.inline.in::after{content:" "; display:block; clear:both;}');
 
         },
     },
@@ -65,20 +65,24 @@ Kakao.selectors = {
 
     'table': {
         //Kontroller sırasında seçici olarak işleme alınsın mı
-        selector: true,
+        selector: false,
         //This işaretleyicisi olsun mu
-        root: true,
+        root: false,
         //In işaretleyicisi olsun mu
-        children: true,
+        children: false,
         //Each değişkeni before ve init methodlarının Start dosyasında işleme alınıp alınmayacağı. Eğer true olursa methodlar çalıştırılır.
         //Şöyle söyleyelim. Before function methodu mevcut olabilir ama bazı durumlarda bunu yükletmek istemeyiz. Each değeri true ve before methodu varsa çalışır
-        each: true,
+        each: false,
         //Sayfa yüklenmeden önce yapılacak işler
         before: function() {
-            result.push('.table.this,.table.in{display:table}');
-            result.push('.table.in>*{display:table-cell;}');
+            Kakao.result.push('.table.this,.table.in{display:table}');
+            Kakao.result.push('.table.in>*{display:table-cell;}');
         },
     },
+
+
+
+
 
     /**
      * Burada tanımlanacak tüm bilgiler yada değerler, selector olarak işaretlenmiş...
@@ -88,6 +92,7 @@ Kakao.selectors = {
      * Bu değerler otomatik olarak eklenir.
      */
     'all': {
+        lock: true,
         //Sayfa yüklenmeden önce yapılacak işler
         before: function(name, arr) {
 
@@ -103,7 +108,7 @@ Kakao.selectors = {
             };
 
             for (var n in allDefaults) {
-                arr.push(format(".{0}-{1}{{2}}", name, n, allDefaults[n]));
+                arr.push(Kakao.format(".{0}-{1}{{2}}", name, n, allDefaults[n]));
             }
 
         },
@@ -121,18 +126,19 @@ Kakao.selectors = {
      * Ekran boyutlarından tamamen bağımsız kullanımı olan bilgiler tanımlanmalıdır
      */
     'default': {
+        lock: true,
         //Each değişkeni before ve init methodlarının Start dosyasında işleme alınıp alınmayacağı. Eğer true olursa methodlar çalıştırılır.
         each: true,
         //Sayfa yüklenmeden önce yapılacak işler
         before: function() {
-            result.push('*{box-sizing:border-box};');
-            result.push('.showinit{display:none};');
-            result.push('[data-grid] .inline {vertical-align:top; width:25%;}');
-            result.push('[data-grid="form"] .inline {vertical-align:text-bottom;}');
-            result.push('[data-grid] .inline label {padding:3px; display:block; font-weight:bold;}');
-            result.push('[data-grid] .inline * {width:100%;}');
-            result.push('[data-grid] .inline.grid-col {padding:2px;}');
-            result.push('[data-magnet] > * {width:33.3333%; float:left;}');
+            Kakao.result.push('*{box-sizing:border-box};');
+            Kakao.result.push('.showinit{display:none};');
+            Kakao.result.push('[data-grid] .inline {vertical-align:top; width:25%;}');
+            Kakao.result.push('[data-grid="form"] .inline {vertical-align:text-bottom;}');
+            Kakao.result.push('[data-grid] .inline label {padding:3px; display:block; font-weight:bold;}');
+            Kakao.result.push('[data-grid] .inline * {width:100%;}');
+            Kakao.result.push('[data-grid] .inline.grid-col {padding:2px;}');
+            Kakao.result.push('[data-magnet] > * {width:33.3333%; float:left;}');
         },
         //Sayfa yüklendiğinde yapılması istenen işler
         init: false
@@ -149,6 +155,7 @@ Kakao.selectors = {
      * 
      */
     'constructor': {
+        lock: true,
         run: function() {
 
             /**
@@ -164,7 +171,7 @@ Kakao.selectors = {
              * Şimdi aşağıda sırasıyla işlemleri başlatıyoruz
              */
 
-            foreach(selectors, function(i, v) {
+            Kakao._for(Kakao.selectors, function(i, v) {
 
                 //Before methodu varsa ve each değeriyle sorgulama işlemine alınmak isteniyorsa
                 if (v.before && v.each)
@@ -207,13 +214,13 @@ Kakao.selectors = {
              */
 
             //Tüm ekran boyutlarını tek tek ele alıyoruz
-            foreach(screens, function(a, b, key) {
+            Kakao._for(Kakao.screens, function(a, b, key) {
 
                 //İşlemler sırasında oluşturululan @media screen değerleri buraya kaydedilecek
                 var cache = [];
 
                 //Piece değeri kadar döngü oluşturur. Bilindiği üzere Piece değeri sayfada oluşturulacak maksimum parça değerini simgeler
-                for (var n = 1; n <= piece; n++) {
+                for (var n = 1; n <= Kakao.piece; n++) {
 
                     var z = [];
 
@@ -225,14 +232,14 @@ Kakao.selectors = {
                      * .map.this.web1
                      */
 
-                    for (var i in selectors) {
-                        var x = selectors[i];
+                    for (var i in Kakao.selectors) {
+                        var x = Kakao.selectors[i];
                         //console.log(x);
                         if (x.root && x.selector)
-                            z.push(format('.{0}.this.{1}{2}', i, key, n));
+                            z.push(Kakao.format('.{0}.this.{1}{2}', i, key, n));
 
                         if (x.children && x.selector)
-                            z.push(format('.{0}.in.{1}-{2}>*', i, key, n));
+                            z.push(Kakao.format('.{0}.in.{1}-{2}>*', i, key, n));
 
                     } //maps
 
@@ -247,8 +254,8 @@ Kakao.selectors = {
                      */
 
 
-                    cache.push(format('{0}{width:{1}%}', z.join(','), screenCalc(n)));
-                    //console.log(format('{0}{width:{1}%}', z.join(','), screenCalc(n)));
+                    cache.push(Kakao.format('{0}{width:{1}%}', z.join(','), Kakao.screenCalc(n)));
+                    //console.log(Kakao.format('{0}{width:{1}%}', z.join(','), screenCalc(n)));
 
 
 
@@ -273,7 +280,7 @@ Kakao.selectors = {
                  * web-hidden yada web-show, web-remove vs...
                  */
 
-                selectors.all.before(key, cache);
+                Kakao.selectors.all.before(key, cache);
 
 
 
@@ -283,7 +290,7 @@ Kakao.selectors = {
                  * Son olarak @media screen and ekran boyutumuzu oluşturuyoruz ve ilgili değerleri içerisine yüklüyoruz
                  * 
                  */
-                result.push(media.create(screens[key], cache.join('')));
+                Kakao.result.push(Kakao.media.create(Kakao.screens[key], cache.join('')));
 
 
 
@@ -293,8 +300,8 @@ Kakao.selectors = {
              * Sayfa üzerinde head kısmına <style></style> nesnesi oluşturuyoruz
              * Oluşturulan nesne içerisine Kakao.result değişkeni içindeki değerleri aktarıyoruz 
              */
-            var sty = Dom.create('style');
-            sty.innerHTML = result.join('');
+            var sty = Kakao.Dom.create('style');
+            sty.innerHTML = Kakao.result.join('');
             document.head.appendChild(sty);
 
 
@@ -316,7 +323,7 @@ Kakao.selectors = {
             var d = document.querySelectorAll('.showinit');
 
             if (d && d.length > 0) {
-                foreach(d, function(a, b) {
+                Kakao._for(d, function(a, b) {
                     b._removeClass('showinit');
                 });
             }

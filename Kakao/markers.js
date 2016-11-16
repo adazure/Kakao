@@ -19,24 +19,24 @@ Kakao.markers = {
 
         run: function() {
 
-            for (var i in screens) {
+            for (var i in Kakao.screens) {
 
-                for (var n = 1; n <= piece; n++) {
+                for (var n = 1; n <= Kakao.piece; n++) {
                     //This
-                    markers.names['this'].push(i + n);
+                    Kakao.markers.names['this'].push(i + n);
                     //In
-                    markers.names['in'].push(i + '-' + n);
+                    Kakao.markers.names['in'].push(i + '-' + n);
                 }
             }
 
             //Defaults
-            markers.names.this.push('this');
-            markers.names.this = markers.names.this.concat(getOnlySelectors());
+            Kakao.markers.names.this.push('this');
+            Kakao.markers.names.this = Kakao.markers.names.this.concat(Kakao.getOnlySelectors());
 
-            markers.names.in.push('in');
-            markers.names.in = markers.names.in.concat(getOnlySelectors());
+            Kakao.markers.names.in.push('in');
+            Kakao.markers.names.in = Kakao.markers.names.in.concat(Kakao.getOnlySelectors());
 
-            markers.names.all = markers.names.all.concat(markers.names.this, markers.names.in);
+            Kakao.markers.names.all = Kakao.markers.names.all.concat(Kakao.markers.names.this, Kakao.markers.names.in);
 
         }
     }

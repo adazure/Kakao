@@ -39,7 +39,7 @@ Kakao.style = {
          */
 
 
-        foreach(list, function(a, b, c) {
+        Kakao._for(list, function(a, b, c) {
 
             //Obj nesnesinin gelen attr özelliği bulunup bir method gibi çalıştırılmaktadır.
             obj[attr](c, b);
@@ -84,7 +84,7 @@ Kakao.style = {
         if (arguments.length >= 2)
             arr = filter.toArray(arguments);
 
-        if (isObj(arr) || isArr(arr)) {
+        if (Kakao.isObj(arr) || Kakao.isArr(arr)) {
             arr.forEach(function(item) {
                 self.classList.add(item);
             })
@@ -128,7 +128,7 @@ Kakao.style = {
          * O bize değeri tekrar buraya tek tek gönderecek ve biz de işleyeceğiz
          */
 
-        if (isObj(name))
+        if (Kakao.isObj(name))
             style.each(this, name, 'css');
 
 
@@ -138,7 +138,7 @@ Kakao.style = {
          * O halde sadece ilgili nesnenin name özelliğinin değerini geriye döndür
          */
 
-        if (isStr(name) && !value) {
+        if (Kakao.isStr(name) && !value) {
 
 
             //Önce normal şekilde bak var mı, varsa döndür
@@ -163,12 +163,12 @@ Kakao.style = {
          */
 
 
-        if (isStr(name) && value) {
+        if (Kakao.isStr(name) && value) {
 
             //Örnek 'border-left-width' gibi gelen değeri 'borderLeftWidth' olarak değiştirir.
-            var y = filter.style(name);
+            var y = Kakao.filter.style(name);
 
-            this.style[y] = value + (isNum(value) ? style.isNumber[y] ? '' : 'px' : '');
+            this.style[y] = value + (Kakao.isNum(value) ? Kakao.style.isNumber[y] ? '' : 'px' : '');
         }
 
         //ilgili nesnenin kendisini tekrar geriye döndür
@@ -207,8 +207,8 @@ Kakao.style = {
          * O bize değeri tekrar buraya tek tek gönderecek ve biz de işleyeceğiz
          */
 
-        if (isObj(name))
-            style.each(this, name, 'attr');
+        if (Kakao.isObj(name))
+            Kakao.style.each(this, name, 'attr');
 
 
         /**
@@ -216,7 +216,7 @@ Kakao.style = {
          * O halde sadece ilgili nesnenin name özelliğinin değerini geriye döndür
          */
 
-        if (isStr(name) && !value)
+        if (Kakao.isStr(name) && !value)
             return this.getAttribute(name);
 
 
@@ -225,7 +225,7 @@ Kakao.style = {
          * name ve value özellikleri mutlak string ise
          * ilgili bilgileri ilgili nesne özelliğinde oluştur
          */
-        if (isStr(name) && isStr(value))
+        if (Kakao.isStr(name) && Kakao.isStr(value))
             this.setAttribute(name, value);
 
         //Her durumda nesnenin kendisini tekrar geriye döndür

@@ -9,7 +9,8 @@ Kakao.piece = 12;
  */
 
 Kakao.screens = {
-    'web': 0,
+    'all': 0,
+    'web': 980,
     'tab': 800,
     'mob': 640,
     'min': 480
@@ -28,8 +29,9 @@ Kakao.screens = {
  * 16.6667
  * 
  */
+
 Kakao.screenCalc = function(n) {
-    var z = (100 / piece * n),
+    var z = (100 / Kakao.piece * n),
         fixed = z % 1 === 0 ? 0 : 4;
-    return (100 / piece * n).toFixed(fixed);
+    return (100 / Kakao.piece * n).toFixed(fixed);
 }

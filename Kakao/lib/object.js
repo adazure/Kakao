@@ -30,7 +30,7 @@ Kakao.objects = {
         for (var i in n) {
 
             //Özelliklerden sadece Object ve String tipindekileri alıyoruz. Yani fonksiyon olmayan değerleri.
-            if (!isFunc(n[i]))
+            if (!Kakao.isFunc(n[i]))
                 u.push(!tp ? i : n[i]);
         }
 
@@ -48,7 +48,7 @@ Kakao.objects = {
      * 
      */
     keys: function(i) {
-        return objects.key(i);
+        return Kakao.objects.key(i);
     },
 
 
@@ -71,7 +71,7 @@ Kakao.objects = {
          * Tip olarak da value değerlerini almamızı sağlamak için true değeri gönderiliyor
          * 
          */
-        return objects.key(i, true);
+        return Kakao.objects.key(i, true);
     },
 
     extend: function(obj1, obj2) {

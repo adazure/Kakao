@@ -2,12 +2,12 @@ Kakao.groups = {
 
 
     //format : web-inline-6-6, tab-inline-12-12-5-1, tab-map-12-12
-    formatR: regx('(' + objects.keys(screens).join('|') + ')\\-(' + getOnlySelectors().join('|') + ')(\\-\\d{1,2})+'),
+    formatR: Kakao.regx('(' + Kakao.objects.keys(Kakao.screens).join('|') + ')\\-(' + Kakao.getOnlySelectors().join('|') + ')(\\-\\d{1,2})+'),
 
 
     applyChildren: function(objs, params, values) {
-        foreach(objs, function(a, b, c) {
-            groups.applyChild(b, params, values);
+        Kakao._for(objs, function(a, b, c) {
+            Kakao.groups.applyChild(b, params, values);
 
         });
     },
@@ -59,7 +59,7 @@ Kakao.groups = {
     applyMatch: function(match, obj) {
 
 
-        foreach(match, function(a, b, c) {
+        Kakao._for(match, function(a, b, c) {
 
             /**
              * b parametresinden gelen değeri exec ile grouplara ayıralım
@@ -73,10 +73,10 @@ Kakao.groups = {
              * group3 : 6
              */
 
-            var params = groups.formatR.exec(b);
+            var params = Kakao.groups.formatR.exec(b);
 
             //Regex nesne formatımız sabit olduğundan, yani new RegExp demediğimiz için formatın sorgu sırasını 0'a çekiyoruz
-            groups.formatR.lastIndex = 0;
+            Kakao.groups.formatR.lastIndex = 0;
 
             //Eğer formata uygun değilse iptal et
             if (!params) return;
@@ -99,7 +99,7 @@ Kakao.groups = {
              */
 
             if (!next) {
-                groups.applyChild(obj, params, values);
+                Kakao.groups.applyChild(obj, params, values);
             }
 
 
@@ -112,7 +112,7 @@ Kakao.groups = {
                     next = obj.parentNode.children.length;
 
                 //Değilse sadece belirli sayı aralığındakileri seçelim
-                else if (next && isNum(next))
+                else if (next && Kakao.isNum(next))
                     next = parseInt(next);
 
                 //0dan büyük bir değer olmalı
@@ -127,7 +127,7 @@ Kakao.groups = {
                     //Şimdi de nesnemizin bulunduğu pozisyondan kaç tanesi bu durumdan etkilenecekse, bu grubun listesini ver
                     var t = children.slice(currentIndex, currentIndex + parseInt(next) + 1);
 
-                    groups.applyChildren(t, params, values);
+                    Kakao.groups.applyChildren(t, params, values);
 
                 }
             }
@@ -141,17 +141,17 @@ Kakao.groups = {
 
 
             //web, tab, mob, min
-            var keys = objects.keys(screens);
+            var keys = Kakao.objects.keys(Kakao.screens);
 
             //Format : [class*="-map-"], [class*="-inline-"], [class*="-table-"]
-            var queryvalue = repeat('[class*="-{}-"]', getOnlySelectors()).join(',');
+            var queryvalue = Kakao.repeat('[class*="-{}-"]', Kakao.getOnlySelectors()).join(',');
 
             //Sayfa üzerinde ki -map-, -inline-, -table- gibi sınıf adlarına sahip nesneleri seçer
             var selectGroups = document.querySelectorAll(queryvalue);
 
             if (selectGroups && selectGroups.length > 0)
             //Bulunan her bir nesneyi tek tek işleme al
-                foreach(selectGroups, function(a, b, c) {
+                Kakao._for(selectGroups, function(a, b, c) {
 
                     //Sıradaki nesnenin sınıf adlarının listesini string olarak al
                     var className = b.className || b.classList.value;
@@ -159,7 +159,7 @@ Kakao.groups = {
                     //-map-, -inline-, -table- gibi değerlerle nesneler bulunmuş olabilir ama yeterli değil
                     //ilgili nesnenin sınıf adlarında tam olarak bizim istediğimiz formatta bir sınıf adı varsa işleme alacağız
 
-                    var match = className.match(groups.formatR);
+                    var match = className.match(Kakao.groups.formatR);
 
                     //Eğer hiç bulunamamışsa bu nesne bize uygun değil demektir
                     if (match == null) return;
@@ -168,7 +168,7 @@ Kakao.groups = {
                     //İşlem yapıldığına dair işaret koyalım
                     b.groupMatch = match;
                     b.groupTrigger = function() {
-                        groups.applyMatch(match, b);
+                        Kakao.groups.applyMatch(match, b);
                     }
 
                     //İlgili nesnenin bağlı olduğuğu parent nesnesine group ibaresi ekleyelim
@@ -186,7 +186,7 @@ Kakao.groups = {
                      * Tek bir nesne içinde 2 kayıt bulunduğunu varsayarak ilerliyoruz
                      */
 
-                    groups.applyMatch(match, b);
+                    Kakao.groups.applyMatch(match, b);
 
                 }) //foreach
 
@@ -195,7 +195,7 @@ Kakao.groups = {
 
                 var tr = e.target.parentNode;
                 if (tr.groups) {
-                    foreach(tr.children, function(a, b) {
+                    Kakao._for(tr.children, function(a, b) {
                         if (b.groupTrigger)
                             b.groupTrigger();
                     })

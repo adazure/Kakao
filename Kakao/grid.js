@@ -4,8 +4,8 @@ Kakao.grid = {
      * Row nesneleri içerisinde yeni column nesneler oluşturmaktadır
      */
     createCol: function(a) {
-        var e = Dom.create('div');
-        grid.createLabel(a, e);
+        var e = Kakao.Dom.create('div');
+        Kakao.grid.createLabel(a, e);
         e.appendChild(a);
         return e;
     },
@@ -19,7 +19,7 @@ Kakao.grid = {
         if (lbl) {
 
             //Label oluştur
-            var c = Dom.create('label')
+            var c = Kakao.Dom.create('label')
                 ._class('data-col-label')
                 ._removeAttr('data-label');
 
@@ -60,7 +60,7 @@ Kakao.grid = {
     //Children nesnelere toplu değer atamaları yapılır
     addClassToChildren: function(children) {
         for (var i = 0; i < children.length; i++) {
-            children[i]._class(filter.toArray(arguments, 1));
+            children[i]._class(Kakao.filter.toArray(arguments, 1));
         }
     },
 
@@ -84,7 +84,7 @@ Kakao.grid = {
                 var length = children.length;
 
                 //Oluşturulacak her bir grid satır nesnesi
-                var rows = Dom.create('div')._class('data-row');
+                var rows = Kakao.Dom.create('div')._class('data-row');
 
                 var colCount = 0;
 
@@ -112,24 +112,24 @@ Kakao.grid = {
                         maxRowCount = rowNumber;
 
                         //Yeni bir satır oluşturmadan önce işlediğin tüm nesnelere sabit tanımlı sınıf isimlerini ata
-                        grid.addClassToChildren(rows.children, 'inline', 'this', 'grid-col');
+                        Kakao.grid.addClassToChildren(rows.children, 'inline', 'this', 'grid-col');
 
                         //İşlenen nesneleri grid nesnesi içine yeni satır olarak ekle
                         a.appendChild(rows);
 
                         //İlgili nesnede data-screen değerleri varsa uygular, eğer yoksa sütun sayısına eşitler
-                        grid.addScreen(rows.children);
+                        Kakao.grid.addScreen(rows.children);
 
 
                         //Sonraki satır için yeni row oluştur
-                        rows = Dom.create('div')._class('data-row');
+                        rows = Kakao.Dom.create('div')._class('data-row');
 
                         //İşlenen sütun sayısını sıfırla
                         colCount = 0;
                     }
 
                     //Hangi satırdaysak, ilgili seçili nesneyi sıradaki satır nesnesine aktar.
-                    rows.appendChild(grid.createCol(item));
+                    rows.appendChild(Kakao.grid.createCol(item));
 
                     //İşlem bittikten sonra, bu nesne ile ilişkisinin bittiğine dair length değeri 1 eksiltiliyor
                     length--;
@@ -137,10 +137,10 @@ Kakao.grid = {
                     //Eğer length değeri 0 ise ve eğer işlenmiş 1,2 kayıt varsa da onları da ekle
                     if (length == 0) {
 
-                        grid.addClassToChildren(rows.children, 'inline', 'this', 'grid-col');
+                        Kakao.grid.addClassToChildren(rows.children, 'inline', 'this', 'grid-col');
 
                         //İlgili nesnede data-screen değerleri varsa uygular, eğer yoksa sütun sayısına eşitler
-                        grid.addScreen(rows.children);
+                        Kakao.grid.addScreen(rows.children);
 
                         a.appendChild(rows);
                     }

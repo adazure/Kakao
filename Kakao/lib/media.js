@@ -16,7 +16,7 @@ Kakao.media = {
      * 
      */
     create: function(g, i) {
-        if (!isNum(g) || g < 1) return i;
-        return format('@media screen and (max-width:{0}px){{1}}', g, i);
+        if (!Kakao.isNum(g) || g < 1) return i;
+        return Kakao.format('@media screen and (max-width:{0}px){{1}}', g, i);
     }
 }
