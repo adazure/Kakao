@@ -7,7 +7,7 @@
  */
 
 
-Kakao.regx = function(p) {
+function Regx(p) {
 
     /**
      * @return

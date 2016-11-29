@@ -1,4 +1,5 @@
-Kakao.filter = {
+var Filter = (function Filter() {
+
 
     /**
      * Gelen verinin ilk harflerini büyük yapmak için oluşturuldu.
@@ -14,7 +15,7 @@ Kakao.filter = {
      * param charCount  :  Parçalanmış verilerden gelen sıradaki değerin, baştan kaç karakterinin büyütüleceği değerini alır. Varsayılan olarak 1'dir
      */
 
-    capitalize: function(str, split, startindex, charCount) {
+    Filter.capitalize = function(str, split, startindex, charCount) {
 
         split = split || ' ';
         startindex = (startIndex = startindex || 0) < 0 ? 0 : startindex;
@@ -23,9 +24,13 @@ Kakao.filter = {
         for (var i = startindex, l = s.length; i < l; i++) {
             s[i] = s[i].slice(0, charCount).toUpperCase() + s[i].slice(charCount);
         }
-
         return s.join(split);
-    },
+    }
+
+
+
+
+
 
     /**
      * Sadece style $css özelliğinde kullanılmak üzere tasarlandı
@@ -34,9 +39,16 @@ Kakao.filter = {
      * Çıktı : paddingTop yada borderTop, backgroundColor gibi... 
      */
 
-    style: function(a) {
-        return filter.capitalize(a, '-', 1).replace(/\-/g, '');
-    },
+    Filter.style = function(a) {
+        return Filter.capitalize(a, '-', 1).replace(/\-/g, '');
+    }
+
+
+
+
+
+
+
 
     /**
      * Arguments nesnesini array tipine çevirir
@@ -46,7 +58,9 @@ Kakao.filter = {
      * args[2] = end 
      * değerlerini içerecektir. Yani bizden bir arguments nesnesini arraya çevirmemiz istendiğinde start ve end değerleriyle de slice yapabileceğiz
      */
-    toArray: function(args) {
+
+
+    Filter.toArray = function(args) {
         var n = [];
         var s = parseInt(arguments[1] ? arguments[1] : 0);
         var e = parseInt(arguments[2] ? arguments[2] : args.length);
@@ -57,4 +71,11 @@ Kakao.filter = {
     }
 
 
-}
+
+
+
+
+
+    return Filter;
+
+})()

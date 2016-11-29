@@ -6,29 +6,29 @@ try {
 
     var KS = document.querySelector('script[src*="Kakao.package"]');
     KS = KS ? eval(KS._attr('data-setting'))[0] : KakaoSetting;
-    if (KS && Kakao.isObj(KS)) {
+    if (KS && isObj(KS)) {
 
         try {
 
-            if (KS.Screens && Kakao.isObj(KS)) {
+            if (KS.Screens && isObj(KS)) {
                 for (var n in KS.Screens)
-                    if (Kakao.screens.hasOwnProperty(n))
-                        Kakao.screens[n] = parseInt(KS.Screens)
+                    if (Screens.Values.hasOwnProperty(n))
+                        Screens.Values[n] = parseInt(KS.Screens)
             }
 
-            if (KS.Piece && Kakao.isNum(KS.Piece))
-                Kakao.piece = KS.Piece;
+            if (KS.Piece && isNum(KS.Piece))
+                Screens.Piece = KS.Piece;
 
-            if (KS.Selectors && Kakao.isObj(KS.Selectors)) {
+            if (KS.Selectors && isObj(KS.Selectors)) {
 
                 for (var n in KS.Selectors)
-                    if (Kakao.selectors.hasOwnProperty(n) && !Kakao.selectors.lock) {
+                    if (Selectors.Values.hasOwnProperty(n) && !Selectors.Values.lock) {
                         var x = KS.Selectors[n];
-                        Kakao.selectors[n].selector = x;
-                        Kakao.selectors[n].root = x;
-                        Kakao.selectors[n].children = x;
-                        Kakao.selectors[n].children = x;
-                        Kakao.selectors[n].each = x;
+                        Selectors.Values[n].selector = x;
+                        Selectors.Values[n].root = x;
+                        Selectors.Values[n].children = x;
+                        Selectors.Values[n].children = x;
+                        Selectors.Values[n].each = x;
                     }
 
             }
@@ -41,5 +41,8 @@ try {
         }
 
     }
+
+
+
 
 } catch (error) {}

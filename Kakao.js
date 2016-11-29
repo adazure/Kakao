@@ -1,9 +1,10 @@
-//Kakao.js start
-var Kakao = (function() {
+(function() {
+        //Kakao.js start
+        var Kakao = (function() {
 
-    function Kakao() {
-        this.result = [];
-    }
+            function Kakao() {
+                this.result = [];
+            }
 
-    return new Kakao();
-})()
+            return new Kakao();
+        })()

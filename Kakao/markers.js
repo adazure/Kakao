@@ -4,41 +4,41 @@
  * Nesne üzerinde eklendiğinde tek başına herhangi bir etkileşimleri bulunmamaktadır
  */
 
-Kakao.markers = {
-
-    names: {
-        'all': [],
-        'this': [],
-        'in': [],
-        'any': false
-    },
+var Markers = (function Markers() { return Markers })()
 
 
+Markers.Names = {
+    'all': [],
+    'this': [],
+    'in': [],
+    'any': false
+}
 
-    'constructor': {
 
-        run: function() {
+Markers.constructor = {}
 
-            for (var i in Kakao.screens) {
+Markers.constructor.run = function run() {
 
-                for (var n = 1; n <= Kakao.piece; n++) {
-                    //This
-                    Kakao.markers.names['this'].push(i + n);
-                    //In
-                    Kakao.markers.names['in'].push(i + '-' + n);
-                }
-            }
+    for (var i in Screens.Values) {
 
-            //Defaults
-            Kakao.markers.names.this.push('this');
-            Kakao.markers.names.this = Kakao.markers.names.this.concat(Kakao.getOnlySelectors());
-
-            Kakao.markers.names.in.push('in');
-            Kakao.markers.names.in = Kakao.markers.names.in.concat(Kakao.getOnlySelectors());
-
-            Kakao.markers.names.all = Kakao.markers.names.all.concat(Kakao.markers.names.this, Kakao.markers.names.in);
-
+        for (var n = 1; n <= Screens.Piece; n++) {
+            //This
+            Markers.Names['this'].push(i + n);
+            //In
+            Markers.Names['in'].push(i + '-' + n);
         }
     }
 
+    //Defaults
+    Markers.Names.this.push('this');
+    Markers.Names.this = Markers.Names.this.concat(Selectors.getOnlySelectors());
+
+    Markers.Names.in.push('in');
+    Markers.Names.in = Markers.Names.in.concat(Selectors.getOnlySelectors());
+
+    Markers.Names.all = Markers.Names.all.concat(Markers.Names.this, Markers.Names.in);
+
 }
+
+
+Plugins.add(Markers);

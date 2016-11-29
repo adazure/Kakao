@@ -1,15 +1,15 @@
 /**
- * Sayfa yüklenmeden önce yapılacak tüm işler ve çalıştırılacak methodlar
+ * Pluginleri çalıştıralım
  */
 
+for (var n = 0, len = Plugins.constructor.run.length; n < len; n++) {
+    Plugins.constructor.run[n]();
+}
 
-Kakao._for(Kakao, function(a, b, c) {
 
-    if (b && b.constructor) {
-        if (b.constructor.run)
-            b.constructor.run();
-        if (b.constructor.onload)
-            window._listen('load', b.constructor.onload);
-    }
+for (var n = 0, len = Plugins.constructor.onload.length; n < len; n++) {
+    Listener.add(window, 'load', Plugins.constructor.onload[n]);
+}
 
-}); //Foreach
+
+})()

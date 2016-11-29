@@ -1,203 +1,233 @@
-//Kakao.js start
-var Kakao = (function() {
+(function() {
+        //Kakao.js start
+        var Kakao = (function() {
 
-    function Kakao() {
-        this.result = [];
-    }
+            function Kakao() {
+                this.result = [];
+            }
 
-    return new Kakao();
-})()
-Kakao.Dom = {
+            return new Kakao();
+        })()
+var Plugins = (function Plugins() {
 
-    /**
-     * <param element adı>
-     * @DOM.create
-     * @Return örnek <div></div>
-     * @Return örnek <div style="display:block;....."></div>
-     * @Return örnek <div id="..." onclick="..." style="..."></div>
-     */
+    Plugins.constructor = {}
 
+    Plugins.constructor.run = [];
+    Plugins.constructor.onload = [];
 
-    create: function(el, arr) {
+    Plugins.add = function add(obj) {
 
-        /**
-         * 
-         * 'el' parametresi bizim oluşturulacak elementimizin tipi olmaktadır
-         * Bunlar div, span, input vs olabilir
-         *  
-         * Arr parametresi ise oluşturulacak el elementinin attribute'lerini yani özelliklerini barındırmaktadır
-         * Arr parametresi Object Array tipinde olabilir. Yani JSON tipinde değer olmalıdır
-         * Arr parametresi zorunlu bir karşılık değildir.
-         * Arr parametresinde gönderilecek örnek değerler
-         * <Input /> nesnesi için örnek
-         * Parametre:
-         * 
-         *      {
-         *          style:{
-         *                  width:'100%',
-         *                  padding:'5px'
-         *              },
-         *          id:'haber-context',
-         *          required:'required'
-         *      }
-         * 
-         * Kullanım:
-         * DOM.create('div',{style:{display:'block',padding:'10px'},id:'haber-context'})
-         * 
-         * Çıktı:
-         * <div id="haber-context" style="display: block; padding: 10px;"></div>
-         * 
-         */
-
-        el = document.createElement(el);
-
-        /**
-         * Gelen arguman nesnesi kontrol ediliyor
-         * Eğer undefined veya null değilse işleme alınıyor
-         * Arguman nesnesi mutlak Object Array tipinde olmalı
-         */
-
-        if (arr && Kakao.isObj(arr)) {
-
-
-            /**
-             * Argumanı döngüye sokuyoruz
-             * Döngü içerisinde de bir takım kontroller yapılıyor
-             */
-
-            Kakao._for(arr, function(i, v, k) {
-
-
-
-                /**
-                 * <param i:index> => sıra numarası
-                 * <param v:value> => değer
-                 * <param k:key>   => anahtar kelime
-                 * 
-                 * 
-                 * 
-                 * 
-                 * Gelen v değeri de bir Object Array nesnesi olabilir
-                 * Buna örnek bir nesnenin style özelliği gösterilebilir
-                 * style attribute özelliği bilindiği gibi birden fazla key ve value değeri içerebilir
-                 * örneğin nesneye v id özelliğini çağır demişken, v style olması durumunda
-                 * style'in v değeri {display:'block',position:'absolute'} vs gibi bir çok ad'a sahip olabilir
-                 * elbette eğer geliştirici tarafından id özelliğine style özelliğinde olduğu gibi bir çok ad gönderilirse hata oluşacaktır
-                 */
-
-                if (!Kakao.isObj(v)) {
-
-                    /**
-                     * Gelen b tipi Object Array tipinde olmadığı için
-                     * k değeri ile el nesnesinin direk o ilgili özelliğine atama yapılıyor
-                     * örnek : k değeri 'id','attribute','style' vs gibi isimler olabilir
-                     * gelen k değerinin aktarımı el[k] => el.id = v => <div id='valuename'></div> şeklinde uygulanacaktır
-                     * 
-                     * Örnek:
-                     * el değeri => div 
-                     * k değeri => id 
-                     * v değeri => haber 
-                     * 
-                     * Çıktı:
-                     * <div id="haber"></div>
-                     */
-
-                    el._attr(k, v);
-                }
-
-                /**
-                 * 
-                 * Bu noktada style gibi Object array tipindeki veriler işlenecek
-                 * Ancak gelen her Object array tipli nesne style özelliği olmak zorunda değildir
-                 * Belki style olmayan ve value özelliğine ilgili datanın aktarılması istenebilir
-                 * Örneğin gelen veri şöyle olsun
-                 * 
-                 * {ad:'KEREM',soyad:'YAVUZ'}
-                 * 
-                 * Böyle bir durumda buradaki veriler bir style özelliğine ait veriler değil.
-                 * Bu gibi veriler direk olarak belirtilen k = key değerinin içeriği olabilir
-                 * örnek:
-                 * <div data-name="{ad:'KEREM',soyad:'YAVUZ'}"></div>
-                 * 
-                 * Geliştirici bu verileri buradan kullanarak işlem yapmak isteyebilir.
-                 * Bu yüzden işlem önceki kontrol ekliyoruz
-                 * 
-                 */
-                else if (Kakao.isObj(v)) {
-
-                    /**
-                     * Gelen key değeri bizim DOM.attr nesnesi içerisinde aynı ad'a sahip bir eleman var mı buna bakar
-                     * Örneğin key değeri 'style' olsun. bu özellik nesnenin bir özelliği olduğundan,
-                     * DOM.attr içinde ki bu key tanımlı method çalıştırılacaktır. Eğer yoksa içerik direk olarak el nesnesinin özelliği olarak atanacaktır
-                     */
-
-                    //Dom.attr nesnesinde gelen key değeri varsa DOM.attr[key]() methodunu çalıştır.
-                    if (Dom.attr[k]) {
-
-                        Dom.attr[k](el, v);
-
-                    }
-
-                    /**
-                     * Dom.attr nesnesi içerisinde gelen key değeri yok
-                     * Gelen veriyi key özelliğinin value değeri olarak atayalım
-                     * <div data-name="{ad:'KEREM',soyad:'YAVUZ'}"></div>
-                     */
-                    else {
-                        el._attr(k, JSON.stringify(v));
-                    }
-
-                }
-
-
-
-            }, 0)
-
-            //Endforeach
-
-
-
-
-        } //Endif
-
-
-        //Oluşturulan nesneyi geri döndür
-        return el;
-
-    },
-
-
-
-
-
-    /**
-     * @DOM.attr
-     * Bir nesnedeki sabit özelliklerin kontrolü bu alanda sağlanacak
-     * Bu sayede nesneye ait özellikler özelleştirilebilir
-     */
-    attr: {
-
-        /**
-         * el nesnesinin style özelliği tetiklendiğinde bu alan işletilecektir
-         * burada ki style adı div,span vb gibi 'style' özelliğindeki isimdir
-         * kontroller sırasında buradaki gerçek isimler kontrol edilecektir.
-         * Nesnenin sahip olduğu gerçek isimler bu alanda tanımlanmalıdır
-         */
-
-        style: function(el, s) {
-            //index,deger,ozellik
-            Kakao._for(s, function(i, v, k) {
-
-                //key değerindeki a-z-A-Z aralığının dışındaki tüm karakterleri temizleyerek işleme alır
-                el.css(k, v);
-
-            })
-
+        if (obj.constructor.run) {
+            Plugins.constructor.run.push(obj.constructor.run);
         }
+
+
+        if (obj.constructor.onload)
+            Plugins.constructor.onload.push(obj.constructor.onload);
     }
 
-}
-Kakao.filter = {
+    return Plugins;
+
+})()
+  var Listener = (function Listener() {
+
+      var mutationNodeSelect = (function mutationNodeSelect() {
+
+          mutationNodeSelect.DOMNodeInserted = function(version, mutationNode, method) {
+              if (version) {
+                  if (mutationNode.addedNodes.length > 0)
+                      method(
+                          mutationNode.addedNodes[0],
+                          mutationNode.target,
+                          mutationNode.type,
+                          mutationNode);
+              } else {
+                  if (mutationNode.target)
+                      method(
+                          mutationNode.target,
+                          mutationNode.relatedNode,
+                          null,
+                          mutationNode);
+              }
+          }
+
+          mutationNodeSelect.DOMNodeRemoved = function(version, mutationNode, method) {
+              if (version) {
+                  if (removedNodes.length > 0)
+                      method(
+                          mutationNode.removedNodes[0],
+                          mutationNode.target,
+                          mutationNode.type,
+                          mutationNode);
+              } else {
+                  if (mutationNode.target)
+                      method(
+                          mutationNode.target,
+                          mutationNode.relatedNode,
+                          null,
+                          mutationNode);
+              }
+          }
+
+          mutationNodeSelect.DOMSubtreeModified = function(version, mutationNode, method) {
+              if (version) {
+                  if (mutationNode.target)
+                      method(
+                          mutationNode.target,
+                          mutationNode.target.parentNode,
+                          mutationNode.type,
+                          mutationNode);
+              } else {
+                  if (mutationNode.target)
+                      method(
+                          mutationNode.target,
+                          mutationNode.target.parentNode,
+                          null,
+                          mutationNode);
+              }
+          }
+
+          return mutationNodeSelect;
+      })();
+
+
+
+
+
+      function selectMode(name) {
+
+          if (window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver) {
+
+              var node = {
+                  'DOMNodeInserted': {
+                      config: {
+                          childList: true
+                      }
+                  },
+                  'DOMNodeRemoved': {
+                      config: {
+                          childList: true
+                      }
+                  },
+                  'DOMSubtreeModified': {
+                      config: {
+                          childList: true,
+                          subtree: true,
+                          attributes: true
+                      }
+                  },
+              }
+
+              if (!node.hasOwnProperty(name)) return null;
+              return node[name]
+
+          } else {
+
+              var node = {
+                  'DOMNodeInserted': true,
+                  'DOMNodeRemoved': true,
+                  'DOMSubtreeModified': true
+              }
+
+              if (!node.hasOwnProperty(name)) return null;
+              return node[name]
+          }
+      }
+
+
+      Listener.add = function(obj, name, method) {
+          if (!MutationServer(obj, name, method)) {
+              addListener(obj, name, method);
+          }
+          return obj;
+      }
+
+      Listener.remove = function(obj, name, method) {
+          if (!MutationServer(obj, name, method)) {
+              removeListener(obj, name, method);
+          }
+          return obj;
+      }
+
+      function MutationServer(obj, name, method) {
+
+          var config = selectMode(name)
+              //Eğer bize gelen bilgi bir mutation mode değeri değilse normal listener olarak devam etsin
+          if (!config) return false
+
+          //Eğer bu nesneye daha önce mutasyon mode uygulanmadıysa
+          //O halde herşey ilkkez olacağından herşeyi oluşturalım 
+          if (!obj.mutationList) {
+              obj.mutationList = {};
+          }
+          //Eğer bu nesnenin mutasyon listesinde belirtilen name değerli bir alan yoksa
+          //yani daha önce mutasyon geçirmiş bir nesne ise alanı oluştur ve içine methodu uygula
+          if (!obj.mutationList[name]) {
+
+              obj.mutationList[name] = [method];
+              if (config.config)
+              //Yeni sistem
+                  createMutationRecord(obj, name, method, config);
+              else
+              //Eski sistem
+                  createMutationEvent(obj, name, method, config);
+
+          } else {
+              //Nesneye daha önce mutasyon uygulanmış ilgili alanda var
+              //O halde ilgili alana mutasyonu ekle ve geri döndür
+              obj.mutationList[name].push(method);
+          }
+
+          //Mutasyon uygulandı
+          return true;
+      }
+
+
+      function addListener(obj, name, method) {
+          if (obj.addEventListener)
+              obj.addEventListener(name, method, false);
+          else
+              obj.attachEvent('on' + name, method);
+      }
+
+      function removeListener(obj, name, method) {
+          if (obj.removeEventListener)
+              obj.removeEventListener(name, method, false);
+          else
+              obj.detachEvent('on' + name, method);
+      }
+
+
+      function createMutationRecord(obj, name, method, config) {
+
+
+          var mos = new MutationObserver(function(e) {
+              e.forEach(function(q) {
+                  obj.mutationList[name].forEach(function(mtd) {
+                      mutationNodeSelect[name](true, q, mtd);
+                  });
+              });
+          });
+
+          mos.observe(obj, config.config);
+      }
+
+
+      function createMutationEvent(obj, name, method, config) {
+          addListener(obj, name, function(e) {
+              obj.mutationList[name].forEach(function(mtd) {
+                  mutationNodeSelect[name](false, e, mtd);
+              });
+          })
+      }
+
+
+
+      return Listener;
+
+  })()
+var Filter = (function Filter() {
+
 
     /**
      * Gelen verinin ilk harflerini büyük yapmak için oluşturuldu.
@@ -213,7 +243,7 @@ Kakao.filter = {
      * param charCount  :  Parçalanmış verilerden gelen sıradaki değerin, baştan kaç karakterinin büyütüleceği değerini alır. Varsayılan olarak 1'dir
      */
 
-    capitalize: function(str, split, startindex, charCount) {
+    Filter.capitalize = function(str, split, startindex, charCount) {
 
         split = split || ' ';
         startindex = (startIndex = startindex || 0) < 0 ? 0 : startindex;
@@ -222,9 +252,13 @@ Kakao.filter = {
         for (var i = startindex, l = s.length; i < l; i++) {
             s[i] = s[i].slice(0, charCount).toUpperCase() + s[i].slice(charCount);
         }
-
         return s.join(split);
-    },
+    }
+
+
+
+
+
 
     /**
      * Sadece style $css özelliğinde kullanılmak üzere tasarlandı
@@ -233,9 +267,16 @@ Kakao.filter = {
      * Çıktı : paddingTop yada borderTop, backgroundColor gibi... 
      */
 
-    style: function(a) {
-        return filter.capitalize(a, '-', 1).replace(/\-/g, '');
-    },
+    Filter.style = function(a) {
+        return Filter.capitalize(a, '-', 1).replace(/\-/g, '');
+    }
+
+
+
+
+
+
+
 
     /**
      * Arguments nesnesini array tipine çevirir
@@ -245,7 +286,9 @@ Kakao.filter = {
      * args[2] = end 
      * değerlerini içerecektir. Yani bizden bir arguments nesnesini arraya çevirmemiz istendiğinde start ve end değerleriyle de slice yapabileceğiz
      */
-    toArray: function(args) {
+
+
+    Filter.toArray = function(args) {
         var n = [];
         var s = parseInt(arguments[1] ? arguments[1] : 0);
         var e = parseInt(arguments[2] ? arguments[2] : args.length);
@@ -256,65 +299,14 @@ Kakao.filter = {
     }
 
 
-}
-/**
- * 
- * ForEach ile istediğimiz şekilde döngü oluşturalım
- * 
- * <param array>  =>  döngü listesi   
- * <param function> => döngü sırasında çalıştırılacak method
- * <param start index>  => döngünün kaçıncı index numarasından itibaren işleneceği
- */
-Kakao._for = function foreach(arr, func, inx) {
-
-    /**
-     * <param inx değeri varsayılan olarak 0'dır
-     * param func ile işlem sırasında çalıştırarak geri değerleri döndürüyoruz
-     */
-    inx = inx || 0;
-
-    //Sadece Object array tipinde nesneler
-    if (Kakao.isObj(arr)) {
-
-        //Başlangıç index numarası
-        var _index = 0,
-            n = 0;
-
-        if (arr.length)
-            for (var i = 0; i < arr.length; i++) {
-                if (i >= inx) {
-                    func(i, arr[i]);
-                }
-            }
-        else {
-            var i = 0;
-            for (var n in arr) {
-
-                func(i, arr[n], n);
-                i++;
-
-            }
-        }
-
-    }
 
 
 
-    /**
-     * Array tipi nesneler için ayıklama işlemi
-     */
-    else if (Kakao.isArr(arr)) {
 
-        for (var i = inx, n = arr.length; i < n; i++) {
 
-            //Invoke
-            func(key, arr[i]);
-        }
+    return Filter;
 
-    } else
-        console.log(arr + ' Object ve Array tipinde bir nesne değil');
-
-}
+})()
 /**
  * Format ile gelen bir veriyi istenen şekile çevirir
  * 
@@ -322,8 +314,8 @@ Kakao._for = function foreach(arr, func, inx) {
  * <noreq arguments>
  */
 
-Kakao.format = function format(f) {
 
+var Format = function Format(f) {
 
     /**
      * 
@@ -331,14 +323,16 @@ Kakao.format = function format(f) {
      * format('{0} tarihinde {1} tarafından yapıldı','10:11:2012','Kerem YAVUZ')
      */
 
-    //a : index, b: value
-    Kakao._for(arguments, function(a, b) {
-        f = f.replace(Kakao.regx('\\{' + (a - 1) + '\\}'), b);
-    }, 1)
+    for (var i = 1; i < arguments.length; i++) {
+        f = f.replace(Regx('\\{' + (i - 1) + '\\}'), arguments[i]);
+    }
 
     return f;
 
 }
+
+
+
 
 /**
  * <param format>
@@ -357,16 +351,20 @@ Kakao.format = function format(f) {
  * 
  */
 
-Kakao.repeat = function repeat(f) {
+
+
+Format.Repeat = function Repeat(f) {
 
     if (arguments.length <= 1) return;
-    var args = Kakao.isObj(arguments[1]) ? arguments[1] : Kakao.filter.toArray(arguments, 1);
+    var args = isObj(arguments[1]) ? arguments[1] : Filter.toArray(arguments, 1);
     var n = [];
-    Kakao._for(args, function(a, b, c) {
-        n.push(f.replace('{}', b));
-    });
+
+    for (var i in args) {
+        n.push(f.replace('{}', args[i]));
+    }
 
     return n;
+
 }
 /**
  * Nesne tipleri ile ilgili dönüşüm bilgilerini alacağımız methodlar
@@ -379,41 +377,42 @@ Kakao.repeat = function repeat(f) {
  */
 
 //Sadece fonksiyon tipler
-Kakao.isFunc = function isFunc(a) {
+function isFunc(a) {
     if (!a) return false;
     return typeof a === 'function';
 }
 
 //Sadece array tipler
-Kakao.isArr = function isArr(a) {
+function isArr(a) {
     if (!a) return false;
     return typeof a === 'array';
 }
 
 //Sadece object array tipler
-Kakao.isObj = function isObj(a) {
+function isObj(a) {
     if (!a) return false;
     return typeof a === 'object';
 }
 
 //Sadece numeric tipler
-Kakao.isNum = function isNum(a) {
+function isNum(a) {
     if (!a) return false;
     return typeof a === 'number';
 }
 
 //Sadece numeric olmayanlar tipler
-Kakao.isNaN = function isNaN(a) {
+function isNaN(a) {
     if (!a) return false;
     return a == Number.isNaN;
 }
 
 //Sadece string tipler
-Kakao.isStr = function isStr(a) {
+function isStr(a) {
     if (!a) return false;
     return typeof a === 'string';
 }
-Kakao.media = {
+var Media = (function Media() {
+
 
     /**
      * 
@@ -430,92 +429,90 @@ Kakao.media = {
      * 
      * 
      */
-    create: function(g, i) {
-        if (!Kakao.isNum(g) || g < 1) return i;
-        return Kakao.format('@media screen and (max-width:{0}px){{1}}', g, i);
+    Media.Create = function(g, i) {
+        if (!isNum(g) || g < 1) return i;
+        return Format('@media screen and (max-width:{0}px){{1}}', g, i);
     }
-}
+
+    return Media;
+})()
 /**
  * 
  *  Object array nesnesindeki özellikleri ve value değerlerini alabilmemizi sağlayan methodlar
  * 
  */
 
+/**
+ * 
+ * Key veya value değerlerini veren methodlar
+ * 2 parametre almaktadır. 
+ * <param nesne>
+ * <param tip>
+ * 
+ * param nesne  : İçeriği temsil etmektedir
+ * param tip    : True veya false değer almaktadır. Varsayılan olarak false'dir.
+ * 
+ * Tip parametresinin false olması keys değerlerini al, true ise sadece value değerleri al demektir
+ * 
+ */
 
-Kakao.objects = {
+
+function Keys(obj, typ) {
+
+    //@Return
+    var u = [];
+
+    //Eleman sayısı kadar devam eder
+    for (var i in obj) {
+
+        //Özelliklerden sadece Object ve String tipindekileri alıyoruz. Yani fonksiyon olmayan değerleri.
+        if (!isFunc(obj[i]))
+            u.push(!typ ? i : obj[i]);
+    }
+
+    //@Return 
+    return u;
+
+}
 
 
-    /**
+
+
+/**
+ * 
+ * @object.values şeklinde çağrılmaktadır
+ * 
+ * <param icerik>
+ * i parametresi ile methoda object array nesnesi gönderilmektedir
+ * 
+ */
+
+
+function Values(obj) {
+
+
+    /** 
      * 
-     * Key veya value değerlerini veren methodlar
-     * 2 parametre almaktadır. 
-     * <param nesne>
+     * <param içerik>
      * <param tip>
      * 
-     * param nesne  : İçeriği temsil etmektedir
-     * param tip    : True veya false değer almaktadır. Varsayılan olarak false'dir.
-     * 
-     * Tip parametresinin false olması keys değerlerini al, true ise sadece value değerleri al demektir
+     * Tip olarak da value değerlerini almamızı sağlamak için true değeri gönderiliyor
      * 
      */
-    key: function(n, tp) {
 
-        //@Return
-        var u = [];
-
-        //Eleman sayısı kadar devam eder
-        for (var i in n) {
-
-            //Özelliklerden sadece Object ve String tipindekileri alıyoruz. Yani fonksiyon olmayan değerleri.
-            if (!Kakao.isFunc(n[i]))
-                u.push(!tp ? i : n[i]);
-        }
-
-        //@Return 
-        return u;
-    },
+    return Keys(obj, true);
+}
 
 
 
-    /**
-     * 
-     * @object.keys şeklinde çağrılmaktadır
-     * <param icerik>
-     * i parametresi ile methoda object array nesnesi gönderilmektedir
-     * 
-     */
-    keys: function(i) {
-        return Kakao.objects.key(i);
-    },
 
 
+function Extend(obj1, obj2) {
 
-    /**
-     * 
-     * @object.values şeklinde çağrılmaktadır
-     * 
-     * <param icerik>
-     * i parametresi ile methoda object array nesnesi gönderilmektedir
-     * 
-     */
-    values: function(i) {
-
-        /** 
-         * 
-         * <param içerik>
-         * <param tip>
-         * 
-         * Tip olarak da value değerlerini almamızı sağlamak için true değeri gönderiliyor
-         * 
-         */
-        return Kakao.objects.key(i, true);
-    },
-
-    extend: function(obj1, obj2) {
-        for (var i in obj2) {
-            obj1[i] = obj2[i];
-        }
+    for (var i in obj2) {
+        obj1[i] = obj2[i];
     }
+
 }
 /**
  * 
@@ -526,7 +523,7 @@ Kakao.objects = {
  */
 
 
-Kakao.regx = function(p) {
+function Regx(p) {
 
     /**
      * @return
@@ -544,208 +541,83 @@ Kakao.regx = function(p) {
     else if (args)
         return new RegExp(p, args);
 }
-/**
- * 
- * Element nesnelere style ve attribute özellikleri atamak için methodlar oluşturuldu
- * Element.each
- * Element.css
- * Element.removeAttr
- * Element.attr
- * Element.class
- * Element.removeClass
- * 
- */
+var Methods = (function Methods() {
 
+    //İlgili nesneye yeni bir sınıf eklemek için kullanılmaktadır
+    //string ve array tipinde değer alabilir
+    //arguments olarak da değer verilebilir
+    //class(arg1, arg2, arg3, arg4)
+    Methods.class = function(arr) {
 
-
-Kakao.style = {
-
-
-    /**
-     * 
-     * Bu method diğer iki methodu destekleme amacıyla oluşturuldu
-     * Sadece bu iki method içerisinde çağrılmakta olup, başka dosyalardan çağrılmamıştır
-     * 
-     * <param object>
-     * <param liste>
-     * <param tip>
-     *  
-     */
-    each: function(obj, list, attr) {
-
-
-        /**
-         * 
-         * Döngü içerisinde ilgili obj nesnesinin attr özelliği çalıştırılmaktadır
-         * Attr parametresi diğer iki methoddan gelen css ve attr gibi isimleri döndürmektedir
-         * Bu isimler ilgili methodların key isimleri ile aynıdır. Yani bu dosyadaki style.css, style.attr tanımlamalarıdır.
-         * Parametre olarak gelen bu iki değeri, obj nesnesi özelliklerinde aratıp, method olarak çağırabilmekteyiz.
-         * Çağırdığımız bu methoda ilgili parametrelerde gönderilerek çalıştırılması sağlandı.
-         * Kısaca, obj nesnesi tarafından çağırılan bu alan tarafından tekrar kendisi çağırılmaktadır
-         */
-
-
-        Kakao._for(list, function(a, b, c) {
-
-            //Obj nesnesinin gelen attr özelliği bulunup bir method gibi çalıştırılmaktadır.
-            obj[attr](c, b);
-
-        })
-    },
-
-
-
-
-
-    /**
-     * CSS özellikleri eklenirken aşağıdaki bazı değerler px vs gibi ekler almamakta.
-     * Bu yüzden sadece sayısal değer aktarımlarında eğer name kısmı bu listede dışında bir kelime gelirse varsayılan olarak px değeri atanacak.
-     * Buradaki veriler sadece kontrol amaçlığıdır. Başka yerden çağırılmamaktadır.
-     * Kullanım yeri css methodudur. Örnek css('opacity',0) gibi bir 'opacity' değer geldiğinde bu alana px değeri eklenmeyecektir.
-     */
-    isNumber: {
-        "animationIterationCount": true,
-        "columnCount": true,
-        "fillOpacity": true,
-        "flexGrow": true,
-        "flexShrink": true,
-        "fontWeight": true,
-        "lineHeight": true,
-        "opacity": true,
-        "order": true,
-        "orphans": true,
-        "widows": true,
-        "zIndex": true,
-        "zoom": true
-
-    },
-
-
-    /**
-     * İlgili nesneye sınıf eklemek için kullanılacak
-     */
-    class: function(arr) {
         var self = this;
 
-        if (arguments.length >= 2)
-            arr = filter.toArray(arguments);
+        //arguments sayısı 2 ve daha fazlasıyla birden fazla sınıf adı var demektir.
+        //Arguments parametreslerini bir dizi ye çeviriyoruz
 
-        if (Kakao.isObj(arr) || Kakao.isArr(arr)) {
-            arr.forEach(function(item) {
-                self.classList.add(item);
+        if (arguments.length >= 2)
+            arr = Filter.toArray(arguments);
+
+        //Eğer gelen değer bir dizi ise devam ediyoruz
+        if (isObj(arr) || isArr(arr)) {
+
+            //Dizi sayısı kadar işlemi okuyoruz
+            arr._each(function(item) {
+                add(self, item);
             })
+
         } else {
-            self.classList.add(arr);
+
+            //Sadece tek bir sınıf adı varsayıyoruz
+            add(self, arr);
         }
+
+        function add(o, n) {
+            if (o.classList)
+                o.classList.add(n);
+            else
+                o.className += ' ' + n;
+        }
+
+        //nesneyi geri döndür
         return self;
-    },
-    /**
-     * İlgili nesneden belirtilen sınıfları siler
-     */
-    removeClass: function() {
+
+    }
+
+
+
+    //Arguments parametresinden gelen değerleri ilgili nesnenin sınıf dizisinden siler
+    //string ve array tipinde değer alabilir
+    //arguments olarak da değer verilebilir
+    //class(arg1, arg2, arg3, arg4)
+    Methods.removeClass = function() {
         for (var i = 0; i < arguments.length; i++) {
             this.classList.remove(arguments[i]);
         }
         return this;
-    },
-
-
-    /**
-     * 
-     * @Element.css
-     * 
-     * @Element.css('display','block');
-     * @Element.css({'display':'block','position':'absolute'})
-     * @Element.css('display') @return 'block';
-     * 
-     * @Element.css('...').css('...').css('...')
-     * 
-     * İlgili nesneye yeni style özellikleri tanımlar
-     * <param name>     : 'display'
-     * <param value>    : 'block'
-     * 
-     */
-    css: function(name, value) {
-
-
-        /**
-         * Gelen name değeri bir Object Array nesnesimi kontrol et
-         * Eğer bir Object Array nesnesi ise önce each methoduna gönderilerek
-         * O bize değeri tekrar buraya tek tek gönderecek ve biz de işleyeceğiz
-         */
-
-        if (Kakao.isObj(name))
-            style.each(this, name, 'css');
-
-
-
-        /**
-         * Gelen name değeri string bir değer ise ve value değeri boş ise, tanımlanmamışsa
-         * O halde sadece ilgili nesnenin name özelliğinin değerini geriye döndür
-         */
-
-        if (Kakao.isStr(name) && !value) {
-
-
-            //Önce normal şekilde bak var mı, varsa döndür
-            if (this.style[name]) return this.style[name];
-
-            //Eğer Internet Explorer kullanılarak çağılıyorsa ve varsa döndür
-            if (this.currentStyle) return this.currentStyle[name];
-
-            //Diğer tarayıcılar tarafından bağlanıyorsa ve her halukarda döndür
-            return window.getComputedStyle(this, null).getPropertyValue(name);
-
-
-        }
-
-
-
-
-
-        /**
-         * name ve value özellikleri mutlak string ise
-         * ilgili bilgileri ilgili nesne özelliğinde oluştur
-         */
-
-
-        if (Kakao.isStr(name) && value) {
-
-            //Örnek 'border-left-width' gibi gelen değeri 'borderLeftWidth' olarak değiştirir.
-            var y = Kakao.filter.style(name);
-
-            this.style[y] = value + (Kakao.isNum(value) ? Kakao.style.isNumber[y] ? '' : 'px' : '');
-        }
-
-        //ilgili nesnenin kendisini tekrar geriye döndür
-
-        return this;
-    },
-
+    }
 
 
 
 
     /**
      * 
-     * @Element.attr
+     * @Element._attr
      * 
-     * @Element.attr('id','objectname');
-     * @Element.attr({
+     * @Element._attr('id','objectname');
+     * @Element._attr({
      *                  'data-number':'10',
      *                  'data-obj':'{ad:"KEREM",soyad:"YAVUZ"}',
      *                  required='required'
      *              });
      * 
-     * @Element.attr('id') @return 'objectname';
-     * @Element.attr('...').attr('...').attr('...')
+     * @Element._attr('id') @return 'objectname';
+     * @Element._attr('...')._attr('...')._attr('...')
      * 
-     * İlgili nesneye yeni style özellikleri tanımlar
-     * <param name>     : 'display'
-     * <param value>    : 'block'
      * 
      */
-    attr: function(name, value) {
+
+
+    Methods.attr = function(name, value) {
 
         /**
          * Gelen name değeri bir Object Array nesnesi mi kontrol et
@@ -753,8 +625,8 @@ Kakao.style = {
          * O bize değeri tekrar buraya tek tek gönderecek ve biz de işleyeceğiz
          */
 
-        if (Kakao.isObj(name))
-            Kakao.style.each(this, name, 'attr');
+        if (isObj(name))
+            each(this, name, 'attr');
 
 
         /**
@@ -762,7 +634,7 @@ Kakao.style = {
          * O halde sadece ilgili nesnenin name özelliğinin değerini geriye döndür
          */
 
-        if (Kakao.isStr(name) && !value)
+        if (isStr(name) && !value)
             return this.getAttribute(name);
 
 
@@ -771,76 +643,121 @@ Kakao.style = {
          * name ve value özellikleri mutlak string ise
          * ilgili bilgileri ilgili nesne özelliğinde oluştur
          */
-        if (Kakao.isStr(name) && Kakao.isStr(value))
+        if (isStr(name) && isStr(value))
             this.setAttribute(name, value);
 
         //Her durumda nesnenin kendisini tekrar geriye döndür
         return this;
-    },
+    }
+
+
+
+
+
+
+
+
+    Methods.remove = function() {
+        if (this.parentNode)
+            this.parentNode.removeChild(this);
+    }
+
+
+
+
+
+
     /**
      * İlgili nesneden belirtilen attribute değerlerini siler
      */
-    removeAttr: function(name) {
+    Methods.removeAttr = function(name) {
         for (var i = 0; i < arguments.length; i++) {
             this.removeAttribute(arguments[i]);
         }
         return this;
-    },
-
-
-}
-
-Element.prototype._css = Kakao.style.css;
-Element.prototype._attr = Kakao.style.attr;
-Element.prototype._removeAttr = Kakao.style.removeAttr;
-Element.prototype._class = Kakao.style.class;
-Element.prototype._removeClass = Kakao.style.removeClass;
-Element.prototype._listen =
-    Document.prototype._listen =
-    Window.prototype._listen = function(e, m) {
-        if (this.addEventListener)
-            this.addEventListener(e, m, false);
-        else
-            this.attachEvent('on' + e, m);
     }
-//Sayfadaki varsayılan ayrılacak parça sayısı
-Kakao.piece = 12;
 
 
-/**
- * Sayfa üzerinde kullanılacak varsayılan ekran boyutları listesi
- * web : 0 değeri diğer boyutların devreye girmediği tüm boyutlarda işletilmesini belirtir.
- * Değerler ve tanımlamalar değeri en yüksekten en aşağıya doğru belirtilmelidir.
- */
-
-Kakao.screens = {
-    'all': 0,
-    'web': 980,
-    'tab': 800,
-    'mob': 640,
-    'min': 480
-}
 
 
-/**
- * <param piece>
- * Gelen n değeri işlemdeki 1,2,3,4,5 vs gibi sayısal veriyi nitelemektedir.
- * Methodun amacı, gelen n değerinin toplam piece maksimum değerine oranını hesaplamak
- * Çıktı olarak yüzdesel değer vermektedir.
- * 
- * Girdi:
- * 2
- * Çıktı:
- * 16.6667
- * 
- */
 
-Kakao.screenCalc = function(n) {
-    var z = (100 / Kakao.piece * n),
-        fixed = z % 1 === 0 ? 0 : 4;
-    return (100 / Kakao.piece * n).toFixed(fixed);
-}
-Kakao.reference = {
+
+
+
+    Methods._each = function(method) {
+        for (var i = 0, len = this.length; i < len; i++) {
+            method(this[i], i);
+        }
+    }
+
+
+
+
+
+    return Methods;
+
+
+
+})()
+
+
+
+
+Element.prototype._attr = Methods.attr;
+Element.prototype._removeAttr = Methods.removeAttr;
+Element.prototype._class = Methods.class;
+Element.prototype._removeClass = Methods.removeClass;
+Element.prototype._newline = Methods.newline;
+Element.prototype.remove = Methods.remove;
+Array.prototype._each = Methods._each;
+Object.prototype._each = Methods._each;
+var Screens = (function Screens() {
+
+    //Sayfadaki varsayılan ayrılacak parça sayısı
+    Screens.Piece = 12;
+
+    /**
+     * Sayfa üzerinde kullanılacak varsayılan ekran boyutları listesi
+     * web : 0 değeri diğer boyutların devreye girmediği tüm boyutlarda işletilmesini belirtir.
+     * Değerler ve tanımlamalar değeri en yüksekten en aşağıya doğru belirtilmelidir.
+     */
+
+    Screens.Values = {
+
+        'all': 0,
+        'web': 1024,
+        'tab': 768,
+        'mob': 425,
+        'min': 360
+    }
+
+
+    /**
+     * <param piece>
+     * Gelen n değeri işlemdeki 1,2,3,4,5 vs gibi sayısal veriyi nitelemektedir.
+     * Methodun amacı, gelen n değerinin toplam piece maksimum değerine oranını hesaplamak
+     * Çıktı olarak yüzdesel değer vermektedir.
+     * 
+     * Girdi:
+     * 2
+     * Çıktı:
+     * 16.6667
+     * 
+     */
+
+
+    Screens.screenCalc = function(n) {
+        var z = (100 / Screens.Piece * n),
+            fixed = z % 1 === 0 ? 0 : 4;
+        return (100 / Screens.Piece * n).toFixed(fixed);
+
+    }
+
+
+
+    return Screens;
+})()
+var References = (function References() {
 
     /**
      * Sayfa üzerinde bulunan tüm ref- etiketine sahip veriler burada tutulmaktadır
@@ -848,182 +765,204 @@ Kakao.reference = {
      * Örnek data: { name: 'sınıfadı', ref: 'this', obj: <Nesne></Nesne> }
      */
 
-    table: [],
+    References.table = [];
 
-
-
-    /**
-     * Sayfa üzerinde oluşturulmuş ref-**- nesnelerini arar ve gelen listeyi geri döndürür
-     */
-    search: function() {
-
-        //@Return
-        var _get = [];
-
-        //İşaretleyici sayısınca döngü oluştur
-        Kakao._for(Kakao.markers.names, function(a, i, c) {
-
-            //Tanımlayıcı
-            var ref = 'ref-' + c + '-';
-
-            //Tüm nesneleri tarar
-            var _e = document.querySelectorAll('[class*=' + ref + ']');
-
-            _e.forEach(function(item) {
-                _get.push(item);
-            });
-
-        })
-
-        //@return geri döndür
-        return _get;
-    },
+    return References;
+})()
 
 
 
 
 
-    /**
-     * <param HTMLElement Array>
-     * <param [this,in,all,any]
-     * Gelen type değerine göre Kakao.markers.names[type] nesnesi içinde tanımlanan nesne listesi içinde arama yapar
-     * Bu liste içerisinde ilgili HTMLElement nesnesinin class değerleri içindeki aynı olan değerleri alır
-     * Bulunan değerler [...] ilgili referans gösterilen nesnenin class değerlerine eklenmek üzere geri döndürülür
-     */
-    getSameClass: function(obj, type) {
+/**
+ * Sayfa üzerinde oluşturulmuş ref-**- nesnelerini arar ve gelen listeyi geri döndürür
+ */
 
-        //Type değerinin "any" olması durumunda nesneye ait class değerlerinin tamamı geri döndürülür
-        if (!Kakao.markers.names[type]) return obj.classList;
 
-        //@Return nesnesi 
-        var re = [];
+References.Search = function() {
 
-        //Gelen type değerini ilgili nesne class değerleri içinde kontrol ederek benzer sınıf adlarını alalım
-        obj.classList.Kakao._for(function(item, i) {
+    //@Return
+    var _get = [];
 
-            if (Kakao.markers.names[type].indexOf(item) != -1)
-                re.push(item);
+    //İşaretleyici sayısınca döngü oluştur
+
+    var key = Keys(Markers.Names);
+
+    for (var i = 0; i < key.length; i++) {
+
+        var c = key[i];
+
+        //Tanımlayıcı
+        var ref = 'ref-' + c + '-';
+
+        //Tüm nesneleri tarar
+        var _e = document.querySelectorAll('[class*=' + ref + ']');
+
+        _e._each(function(item) {
+            _get.push(item);
         });
 
-        //Listesi geri döndürelim
-        return re;
-    },
+    }
+
+    //@return geri döndür
+    return _get;
+
+}
 
 
 
-    /**
-     * Search methodu ile sayfa üzerinde bulunmuş ref- etiketli nesnelere getReference methodu static prototype olarak eklenecektir
-     * HTMLElement.getReference(refName) olarak işletilecektir.
-     * 
-     * <param referencetype> => [this,in,all,any]
-     * Table[] nesnesine atanan bu ilgili ref- etiketli nesneler buraya aktarılmıştı
-     * Table[] nesnesinde arama yapıldığında buradaki ilgili nesnelerin getReference olarak atanmış methodu kolayca çalıştırılabilecek
-     * Buradaki amaç bu method çağrıldığında, bağlı bulunduğu nesnenin içindeki diğer <element></element> elementler taranacak
-     * Taranan bu nesnelerde, getReference methodu çağrılan nesnedeki [sınıfadı] aranacak ve bulunan nesnelere 
-     */
-    getReference: function(refName) {
-        var _self = this;
 
-        var n = document.querySelectorAll('.' + _self.reffName);
-        if (n && n.length > 0) {
-            var _ref = Kakao.reference.getSameClass(_self, refName);
+/**
+ * <param HTMLElement Array>
+ * <param [this,in,all,any]
+ * Gelen type değerine göre markers.names[type] nesnesi içinde tanımlanan nesne listesi içinde arama yapar
+ * Bu liste içerisinde ilgili HTMLElement nesnesinin class değerleri içindeki aynı olan değerleri alır
+ * Bulunan değerler [...] ilgili referans gösterilen nesnenin class değerlerine eklenmek üzere geri döndürülür
+ */
 
-            if (_ref)
-                n.foreach(function(item, index) {
-                    item._class(_ref);
-                    item.classList.remove(_self.reffName);
-                });
-        }
-    },
+References.getSameClass = function(obj, type) {
+
+    //Type değerinin "any" olması durumunda nesneye ait class değerlerinin tamamı geri döndürülür
+    if (!Markers.Names[type]) return obj.classList;
+
+    //@Return nesnesi 
+    var re = [];
+
+    //Gelen type değerini ilgili nesne class değerleri içinde kontrol ederek benzer sınıf adlarını alalım
+    obj.classList._each(function(i) {
+        re.push(i);
+    });
 
 
-    'constructor': {
-        onload: function() {
+    //Listesi geri döndürelim
+    return re;
+
+}
 
 
-            //Sayfa üzerindeki tüm referens nesnelerini arar
-            var n = Kakao.reference.search();
-
-            //Arama sonucu gelen nesne boş veya liste sayısı 0'sa işlemi iptal et
-            if (!n || n.length == 0) return;
-
-            //İlgili nesne içerisinde tam istediğimiz ref- sınıf adı varsa alalım
-            var match = regx('ref\\-(' + objects.keys(Kakao.markers.names).join('|') + ')\\-(\\w+)');
 
 
-            n.forEach(function(item, index) {
+/**
+ * Search methodu ile sayfa üzerinde bulunmuş ref- etiketli nesnelere getReference methodu static prototype olarak eklenecektir
+ * HTMLElement.getReference(refName) olarak işletilecektir.
+ * 
+ * <param referencetype> => [this,in,all,any]
+ * Table[] nesnesine atanan bu ilgili ref- etiketli nesneler buraya aktarılmıştı
+ * Table[] nesnesinde arama yapıldığında buradaki ilgili nesnelerin getReference olarak atanmış methodu kolayca çalıştırılabilecek
+ * Buradaki amaç bu method çağrıldığında, bağlı bulunduğu nesnenin içindeki diğer <element></element> elementler taranacak
+ * Taranan bu nesnelerde, getReference methodu çağrılan nesnedeki [sınıfadı] aranacak ve bulunan nesnelere 
+ */
 
-                // Sıradaki nesneye ait sınıf değerleri içinde ilgili pattern modelini aratalım
-                var get = item.className.match(match);
 
-                //İstenilen pattern mutlaka en az 1 tane varsa işleme devam et
-                if (get || get.length > 0) {
+References.getReference = function(refName) {
 
-                    //Pattern değerine ait tüm değerleri sırasıyla işleme al
-                    get.Kakao._for(function(a) {
+    var _self = this;
+    var n = document.querySelectorAll('.' + _self.reffName);
 
-                        /**
-                         * Gelen sıradaki veriyi parçalarına ayır
-                         * Çıktı:
-                         * ['ref-in-sınıfadi'],['in'],['sinifadi']
-                         */
-                        var grp = match.exec(a);
+    if (n && n.length > 0) {
+        var _ref = References.getSameClass(_self, refName);
 
-                        //Regex Exec işleminden sonra regexin işlem index numarasını 0'a eşitliyoruz. Böylece sıradaki diğer işlem 0'ıncı karakterden başlayacak
-                        match.lastIndex = 0;
-
-                        //Eğer gelen bir grup değeri varsa işleme devam et
-                        if (grp) {
-
-                            //Daha sonradan tekrar kullanabilmek için ilgili sıradaki değerleri tabloya kaydet
-                            Kakao.reference.table.push({ name: grp[2], ref: grp[1], obj: item });
-
-                            //İlgili nesneden [0]'ncı değeri yani gelen ['ref-in-sınıfadi'] değerini siler
-                            item.classList.remove(grp[0]);
-
-                            //Bu nesneye daha önce getReference methodu eklenmemişse devam et
-                            if (!item.getReference) {
-
-                                //getReference methodu oluştur ve varolan method ile eşle
-                                item.getReference = Kakao.reference.getReference;
-
-                                //[sinifadi] değerini ilgili nesneye aktaralım
-                                item.reffName = grp[2];
-
-                                //İlgili nesne üzerinde oluşturulacak attribute özelliğine benzersiz veri atayalım
-                                item.refixClsName = '-refix-cls-000' + Math.round(Math.random() * 99999);
-
-                                item.setAttribute('data-refix-cls', ' ');
-
-                                //İşlemlerden sonra ilgili methodu ilkkez başlatalım
-                                item.getReference(grp[1]);
-                            }
-
-                        } //EndIf
-
-                    }); //Foreach
-
-                } //EndIf
-
+        if (_ref)
+            n._each(function(item, index) {
+                item._class(_ref);
+                item.classList.remove(_self.reffName);
             });
-
-
-            //Sayfa üzerinde yeni bir nesne oluşturulduğunda tetiklenecek methodumuz
-            document._listen('DOMNodeInserted', function(e) {
-
-                Kakao.reference.table.foreach(function(item, i) {
-
-                    item.obj.getReference(item.name);
-
-                });
-
-            });
-
-
-        }
     }
 
 }
+
+
+
+
+
+References.constructor = {};
+
+
+
+
+
+References.constructor.onload = function() {
+
+
+    //Sayfa üzerindeki tüm referens nesnelerini arar
+    var n = References.Search();
+
+    //Arama sonucu gelen nesne boş veya liste sayısı 0'sa işlemi iptal et
+    if (!n || n.length == 0) return;
+
+    //İlgili nesne içerisinde tam istediğimiz ref- sınıf adı varsa alalım
+    var match = Regx('ref\\-(' + Keys(Markers.Names).join('|') + ')\\-(\\w+)');
+
+    n._each(function(item, index) {
+
+        // Sıradaki nesneye ait sınıf değerleri içinde ilgili pattern modelini aratalım
+        var get = item.className.match(match);
+
+        //İstenilen pattern mutlaka en az 1 tane varsa işleme devam et
+        if (get && get.length > 0) {
+
+
+            //Pattern değerine ait tüm değerleri sırasıyla işleme al
+            get._each(function(a) {
+
+                /**
+                 * Gelen sıradaki veriyi parçalarına ayır
+                 * Çıktı:
+                 * ['ref-in-sınıfadi'],['in'],['sinifadi']
+                 */
+                var grp = match.exec(a);
+
+                //Regex Exec işleminden sonra regexin işlem index numarasını 0'a eşitliyoruz. Böylece sıradaki diğer işlem 0'ıncı karakterden başlayacak
+                match.lastIndex = 0;
+
+                //Eğer gelen bir grup değeri varsa işleme devam et
+                if (grp) {
+
+                    //Daha sonradan tekrar kullanabilmek için ilgili sıradaki değerleri tabloya kaydet
+                    References.table.push({ name: grp[2], ref: grp[1], obj: item });
+
+                    //İlgili nesneden [0]'ncı değeri yani gelen ['ref-in-sınıfadi'] değerini siler
+                    item.classList.remove(grp[0]);
+
+                    //Bu nesneye daha önce getReference methodu eklenmemişse devam et
+                    if (!item.getReference) {
+
+                        //getReference methodu oluştur ve varolan method ile eşle
+                        item.getReference = References.getReference;
+
+                        //[sinifadi] değerini ilgili nesneye aktaralım
+                        item.reffName = grp[2];
+
+                        //İlgili nesne üzerinde oluşturulacak attribute özelliğine benzersiz veri atayalım
+                        item.refixClsName = '-refix-cls-000' + Math.round(Math.random() * 99999);
+
+                        //İşlemlerden sonra ilgili methodu ilkkez başlatalım
+                        item.getReference(grp[1]);
+                    }
+
+                } //EndIf
+
+            }); //_each
+
+        } //EndIf
+
+    });
+
+
+    //Sayfa üzerinde yeni bir nesne oluşturulduğunda tetiklenecek methodumuz
+    Listener.add(document.body, 'DOMSubtreeModified', function() {
+
+        References.table._each(function _each(item) {
+            item.obj.getReference(item.name);
+
+        });
+    });
+
+    Listener.remove(window, 'load', References.constructor.onload);
+}
+
+
+Plugins.add(References);
 /*
 
 
@@ -1033,81 +972,254 @@ Kakao.reference = {
  * 
  */
 
-Kakao.getOnlySelectors = function() {
+var Selectors = (function Selectors() {
+
+
+    Selectors.Values = {};
+
+    return Selectors;
+})()
+
+
+
+
+//Sadece selector özelliği olan nesneleri adlarını getirir
+//@return [float, inline, table]
+Selectors.getOnlySelectors = function getOnlySelectors() {
     var r = [];
-    for (var i in Kakao.selectors) {
-        if (Kakao.selectors[i].selector && !Kakao.selectors[i].lock)
+    for (var i in Selectors.Values) {
+        if (Selectors.Values[i].selector && !Selectors.Values[i].lock)
             r.push(i);
     }
     return r;
 }
 
-Kakao.selectors = {
-
-    'map': {
-        //Kontroller sırasında seçici olarak işleme alınsın mı
-        selector: true,
-        //This işaretleyicisi olsun mu
-        root: true,
-        //In işaretleyicisi olsun mu
-        children: true,
-        //Each değişkeni before ve init methodlarının Start dosyasında işleme alınıp alınmayacağı. Eğer true olursa methodlar çalıştırılır.
-        //Şöyle söyleyelim. Before function methodu mevcut olabilir ama bazı durumlarda bunu yükletmek istemeyiz. Each değeri true ve before methodu varsa çalışır
-        each: true,
-        //Sayfa yüklenmeden önce yapılacak işler
-        before: function() {
-            Kakao.result.push('.map.this,.map.in>*{float:left; margin:0;}');
-            Kakao.result.push('.map.in::before,.map.in::after{content:" "; display:block; clear:both;}');
-        },
-    },
 
 
 
 
-
-    'inline': {
-        //Kontroller sırasında seçici olarak işleme alınsın mı
-        selector: true,
-        //This işaretleyicisi olsun mu
-        root: true,
-        //In işaretleyicisi olsun mu
-        children: true,
-        //Each değişkeni before ve init methodlarının Start dosyasında işleme alınıp alınmayacağı. Eğer true olursa methodlar çalıştırılır.
-        //Şöyle söyleyelim. Before function methodu mevcut olabilir ama bazı durumlarda bunu yükletmek istemeyiz. Each değeri true ve before methodu varsa çalışır
-        each: true,
-        //Sayfa yüklenmeden önce yapılacak işler
-        before: function() {
-            Kakao.result.push('.inline.this,.inline.in>*{display:inline-block; vertical-align:top;}');
-            Kakao.result.push('.inline.in>*{margin-right:-4px;}');
-            Kakao.result.push('.inline.in::before,.inline.in::after{content:" "; display:block; clear:both;}');
-
-        },
-    },
-
-
-
-
-
-
-    'table': {
-        //Kontroller sırasında seçici olarak işleme alınsın mı
-        selector: false,
-        //This işaretleyicisi olsun mu
-        root: false,
-        //In işaretleyicisi olsun mu
-        children: false,
-        //Each değişkeni before ve init methodlarının Start dosyasında işleme alınıp alınmayacağı. Eğer true olursa methodlar çalıştırılır.
-        //Şöyle söyleyelim. Before function methodu mevcut olabilir ama bazı durumlarda bunu yükletmek istemeyiz. Each değeri true ve before methodu varsa çalışır
-        each: false,
-        //Sayfa yüklenmeden önce yapılacak işler
-        before: function() {
-            Kakao.result.push('.table.this,.table.in{display:table}');
-            Kakao.result.push('.table.in>*{display:table-cell;}');
-        },
-    },
+/**
+ * Yeni bir selector nesnesi eklemek için kullanılır.
+ * Amaç plugin şeklinde yapmak olduğundan ve geliştirici tarafından istenirse yüklenmesi amacıyla oluşturuluyor
+ * Böylece geliştirici sadece istediği pluginleri yükleyerek gereksiz script tanımlamalarını yüklememiş ve 
+ * Yükleme hızından da kazanılmış olacaktır
+ * 
+ * Yeni bir selector nesnesinde olması gereken özellikler ve tanımlamalar aşağıdadır
+ * 
+ * <param name> Selector nesnesi için benzersiz bir isim tanımlanmalı
+ * <param object> Selector nesnesinin alacağı sabit paramatreler için Object Array nesnesi
+ * 
+ * Örnek Object Array nesnesi
+ * {
+ *  selector:       true/false değer alır. Eğer nesneler üzerinde bir işlem yapılacaksa,
+ *  lock:           true/false Lock özelliğini geliştiricilerin dışarıdan değer tanımladıklarında(setting özelliğinde) buradaki benzersiz isimle uyuşmamaları içindir.
+ *                             Burada tanımlanan isimde bir isim tanımlamamaları gerekmektedir anlamını taşımaktadır.
+ *  root:           true/false Root özelliği this marker'ını ifade etmektedir. İşlem yapılacak nesnelerin direk kendisinide kapsayıp kapsamayacağını belli etmek için eklendi.
+ *                             Örneğin float this, inline this tanımlamasında olduğu gibi tanımlamaların yapılıp yapılmayacağını belli eder
+ *                             Style oluşturulmaları sırasında kullanılmaktadır. Yani ilgili methodumuz gelen selector adına --- 'selectorName'.this --- gibi ibareleri ekler
+ * 
+ *  children        true/false Root özelliğinde olduğu gibi ancak "in" ifadesi için kullanılmaktadır ve float in, inline in gibi ifadelere maruz kalıp kalamayacağını belli eder. İhtiyaç yoksa false işaretlenmelidir.
+                               Style oluşturulmaları sırasında kullanılmaktadır. Yani ilgili methodumuz gelen selector adına --- 'selectorName'.in > * --- gibi ibareleri ekler
+ * 
+ *  each            true/false Selector nesnemiz de before ve init methodları bulunmaktadır. Bazı durumlarda ya da yeni ekleyeceğimiz bu selector nesnemizde before ve init nesnelerini...
+ *                             Sayfa yüklendiğinde veya sayfa yüklenirken çalıştırmak istemeyebiliriz. Bu durumda each alanını false yaparak istisnai hale getirebilir ve sadece biz methodlarını çağırdığımız yerden
+ *                             çalışmasını isteyebiliriz.
+ * 
+ *  before          function   Sayfa yüklenmeden önce yapılması istenen işlemler
+ *  init            function   Sayfa yüklendiğinde yapılması istenen işlemler
+ * 
+ * }
+ * 
+ * 
+ */
 
 
 
+Selectors.add = function add(name, selectorObj) {
+
+    Selectors.Values[name] = selectorObj;
+
+}
+
+
+Selectors.constructor = {}
+
+
+
+
+/**
+ * 
+ * Bu alan yukarıdaki tanımlamalardan tamamen bağımsızdır
+ * Bu method sadece start nesnesinden çağrıldığında işletilecektir.
+ * 
+ */
+
+Selectors.constructor.run = function run() {
+
+
+    /**
+     * //////////////////////////////////////////
+     * ////////// SELECTOR START ////////////////
+     * //////////////////////////////////////////
+     */
+
+    /**
+     * Selector nesnesi içerisinde yüklenmesi gereken alanları yükleyelim
+     * Buradaki yükleme işlemi before ve init methodlarının çağrılarak Kakao.result nesnesi içerisine yüklenmesi
+     * Kakao.result nesnesine yüklenen veriler sayfada oluşturulacak <style></style> nesnesine aktarılacaktır
+     * Şimdi aşağıda sırasıyla işlemleri başlatıyoruz
+     */
+
+    for (var i in Selectors.Values) {
+
+        var v = Selectors.Values[i];
+
+        //Before methodu varsa ve each değeriyle sorgulama işlemine alınmak isteniyorsa
+        if (v.before && v.each)
+            v.before();
+
+        //Sayfa ve dosya yüklendiğinde çalıştırılacak veya yapılacak işlemler. Eğer init methodu varsa çalışırır.
+        if (v.init)
+            Listener(window, 'load', v.init);
+    }
+
+
+    /**
+     * Selector nesnesi içerisinde bulunan seçici adlarıyla, screens nesnesi içerisindeki değerler birleştirilerek, aşağıdaki örnek çıktılar sayfa boyutlarına göre oluşturulmaktadır
+     * 
+     * Örnek 'tab' screen çıktısı:
+     * 
+     * @media screen and (max-width:980px){
+     *  .float.this.tab1,.float.in.tab-1>*,.inline.this.tab1,.inline.in.tab-1>*,.table.this.tab1,.table.in.tab-1>*{width:8.3333%}
+        .float.this.tab2,.float.in.tab-2>*,.inline.this.tab2,.inline.in.tab-2>*,.table.this.tab2,.table.in.tab-2>*{width:16.6667%}
+        .float.this.tab3,.float.in.tab-3>*,.inline.this.tab3,.inline.in.tab-3>*,.table.this.tab3,.table.in.tab-3>*{width:25%}
+        .float.this.tab4,.float.in.tab-4>*,.inline.this.tab4,.inline.in.tab-4>*,.table.this.tab4,.table.in.tab-4>*{width:33.3333%}
+        .float.this.tab5,.float.in.tab-5>*,.inline.this.tab5,.inline.in.tab-5>*,.table.this.tab5,.table.in.tab-5>*{width:41.6667%}
+        .float.this.tab6,.float.in.tab-6>*,.inline.this.tab6,.inline.in.tab-6>*,.table.this.tab6,.table.in.tab-6>*{width:50%}
+        .float.this.tab7,.float.in.tab-7>*,.inline.this.tab7,.inline.in.tab-7>*,.table.this.tab7,.table.in.tab-7>*{width:58.3333%}
+        .float.this.tab8,.float.in.tab-8>*,.inline.this.tab8,.inline.in.tab-8>*,.table.this.tab8,.table.in.tab-8>*{width:66.6667%}
+        .float.this.tab9,.float.in.tab-9>*,.inline.this.tab9,.inline.in.tab-9>*,.table.this.tab9,.table.in.tab-9>*{width:75%}
+        .float.this.tab10,.float.in.tab-10>*,.inline.this.tab10,.inline.in.tab-10>*,.table.this.tab10,.table.in.tab-10>*{width:83.3333%}
+        .float.this.tab11,.float.in.tab-11>*,.inline.this.tab11,.inline.in.tab-11>*,.table.this.tab11,.table.in.tab-11>*{width:91.6667%}
+        .float.this.tab12,.float.in.tab-12>*,.inline.this.tab12,.inline.in.tab-12>*,.table.this.tab12,.table.in.tab-12>*{width:100%}
+        .tab-hidden{display:none !important}
+        .tab-show{display:block !important}
+        .tab-textcenter{text-align:center !important}
+        .tab-textright{text-align:right !important}
+        .tab-textleft{text-align:left !important}
+        .tab-left{margin-left:0; margin-right:auto;}
+        .tab-center{margin-left:auto; margin-right:auto; display:inherit !important;}
+        .tab-right{margin-left:auto; margin-right:0}
+        }
+     */
+
+    //Tüm ekran boyutlarını tek tek ele alıyoruz
+
+    var key_ = Keys(Screens.Values);
+
+    key_._each(function _each(key) {
+
+        //İşlemler sırasında oluşturululan @media screen değerleri buraya kaydedilecek
+        var cache = [];
+
+        //Piece değeri kadar döngü oluşturur. Bilindiği üzere Piece değeri sayfada oluşturulacak maksimum parça değerini simgeler
+        for (var n = 1; n <= Screens.Piece; n++) {
+
+            var z = [];
+
+            /**
+             * Seçicileri bir döngü içerisinde ele alıp
+             * Gelen her bir değeri this ve in işaretleyicilerle birleştiriyoruz
+             * 
+             * Örnek çıktı:
+             * .float.this.web1
+             */
+
+            for (var i in Selectors.Values) {
+                var x = Selectors.Values[i];
+                //console.log(x);
+                if (x.root && x.selector)
+                    z.push(Format('.{0}.this.{1}{2}', i, key, n));
+
+                if (x.children && x.selector)
+                    z.push(Format('.{0}.in.{1}-{2}>*', i, key, n));
+
+
+
+            } //floats
+
+
+            /**
+             * Z Array nesnesine eklenen çıktıyı formatlayarak yeni bir çıktı elde ediyoruz
+             * 
+             * Örnek çıktı:
+             * .float.this.web1,.inline.this.web1,.table.this.web1{width:8.3333%}
+             */
+
+
+            cache.push(Format('{0}{width:{1}%}', z.join(','), Screens.screenCalc(n)));
+            //console.log(Kakao.format('{0}{width:{1}%}', z.join(','), screenCalc(n)));
+
+
+
+        } //piece
+
+
+
+
+
+
+
+        /**
+         * Selector nesnemizde all diye bir alan tanımladık
+         * Bu alan her bir screen değerinde oluşturulacak verileri simgeliyordu
+         * Örneğin işlem sırasındaki screen adı 'web' olsun. Bu gelen değeri Selector.all nesnemizin before methoduna gönderiyoruz
+         * O da bize 'web' ön etiketiyle beraber bu method içindeki CSS adlarını birleştirerek ilgili ekran boyutunun değerleri olarak işleme almaktadır.
+         * 
+         * örnek:
+         * 'web' adı methoda gönderiliyor.
+         * Çıktı:
+         * web-hidden yada web-show, web-remove vs...
+         */
+
+        Selectors.Values.all.before(key, cache);
+
+
+
+        /**
+         * Son olarak @media screen and ekran boyutumuzu oluşturuyoruz ve ilgili değerleri içerisine yüklüyoruz
+         * 
+         */
+        Kakao.result.push(Media.Create(Screens.Values[key], cache.join('\n')));
+
+
+
+    })
+
+    /**
+     * Sayfa üzerinde head kısmına <style></style> nesnesi oluşturuyoruz
+     * Oluşturulan nesne içerisine Kakao.result değişkeni içindeki değerleri aktarıyoruz 
+     */
+    var sty = document.createElement('style');
+    sty.innerHTML = Kakao.result.join('\n');
+    document.head.appendChild(sty);
+
+
+    /**
+     * //////////////////////////////////////////
+     * ////////// SELECTOR END //////////////////
+     * //////////////////////////////////////////
+     */
+
+
+
+
+
+}
+
+
+Plugins.add(Selectors);
+Selectors.add('all', {
 
 
     /**
@@ -1117,996 +1229,1145 @@ Kakao.selectors = {
      * web-hidden, mob-hidden, tab-hidden vs. web, mob, tab gibi seçici içimlerini belirtmeniz gerekmez
      * Bu değerler otomatik olarak eklenir.
      */
-    'all': {
-        lock: true,
-        //Sayfa yüklenmeden önce yapılacak işler
-        before: function(name, arr) {
 
-            var allDefaults = {
-                'hidden': 'display:none !important',
-                'show': 'display:block !important',
-                'textcenter': 'text-align:center !important',
-                'textright': 'text-align:right !important',
-                'textleft': 'text-align:left !important',
-                'left': 'margin-left:0; margin-right:auto;',
-                'center': 'margin-left:auto; margin-right:auto; display:inherit !important;',
-                'right': 'margin-left:auto; margin-right:0'
-            };
+    lock: true,
 
-            for (var n in allDefaults) {
-                arr.push(Kakao.format(".{0}-{1}{{2}}", name, n, allDefaults[n]));
-            }
+    before: function(name, arr) {
 
-        },
-    },
+        var allDefaults = {
+            'hidden': 'display:none !important',
+            'show': 'display:block !important',
+            'textcenter': 'text-align:center !important',
+            'textright': 'text-align:right !important',
+            'textleft': 'text-align:left !important',
+            'left': 'margin-left:0; margin-right:auto;',
+            'center': 'margin-left:auto; margin-right:auto; display:inherit !important;',
+            'right': 'margin-left:auto; margin-right:0'
+        };
+
+        for (var n in allDefaults) {
+            arr.push(Format(".{0}-{1}{{2}}", name, n, allDefaults[n]));
+        }
 
 
 
-
-
-
+    }
+});
+Selectors.add('defaults', {
 
 
     /**
      * Sayfa içerisinde genel kullanım için tanımlanmış bilgiler yer alıyor
      * Ekran boyutlarından tamamen bağımsız kullanımı olan bilgiler tanımlanmalıdır
      */
-    'default': {
-        lock: true,
-        //Each değişkeni before ve init methodlarının Start dosyasında işleme alınıp alınmayacağı. Eğer true olursa methodlar çalıştırılır.
-        each: true,
-        //Sayfa yüklenmeden önce yapılacak işler
-        before: function() {
-            Kakao.result.push('*{box-sizing:border-box};');
-            Kakao.result.push('.showinit{display:none};');
-            Kakao.result.push('[data-grid] .inline {vertical-align:top; width:25%;}');
-            Kakao.result.push('[data-grid="form"] .inline {vertical-align:text-bottom;}');
-            Kakao.result.push('[data-grid] .inline label {padding:3px; display:block; font-weight:bold;}');
-            Kakao.result.push('[data-grid] .inline * {width:100%;}');
-            Kakao.result.push('[data-grid] .inline.grid-col {padding:2px;}');
-            Kakao.result.push('[data-magnet] > * {width:20%; float:left;}');
-        },
-        //Sayfa yüklendiğinde yapılması istenen işler
-        init: false
+
+    lock: true,
+
+    each: true,
+
+    before: function() {
+        Kakao.result.push('*{box-sizing:border-box} ');
+        Kakao.result.push('.showinit{display:none !important;}');
+        Kakao.result.push('.overflow{overflow:hidden;}');
+        Kakao.result.push('[data-grid]>*{width:100%;}');
+        Kakao.result.push('[data-grid] .grid-col {vertical-align:top; width:25%;}');
+        Kakao.result.push('[data-grid="form"] .grid-col {vertical-align:text-bottom !important;}');
+        Kakao.result.push('[data-grid] .grid-col label {padding:3px; display:block; font-weight:bold;}');
+        Kakao.result.push('[data-grid] .grid-col * {width:100%;}');
+        Kakao.result.push('[data-grid] .grid-col {padding:2px;}');
+        Kakao.result.push('[data-grid] .data-row::before,[data-grid] .data-row::after{content:" "; display:block; clear:both; width:100% !important;}')
+        Kakao.result.push('[data-magnet] > * {width:20%; float:left;}');
     },
 
+    init: false
 
 
+});
+Selectors.add('inline', {
 
 
-    /**
-     * 
-     * Bu alan yukarıdaki tanımlamalardan tamamen bağımsızdır
-     * Bu method sadece start nesnesinden çağrıldığında işletilecektir.
-     * 
-     */
-    'constructor': {
-        lock: true,
-        run: function() {
+    selector: true,
 
-            /**
-             * //////////////////////////////////////////
-             * ////////// SELECTOR START ////////////////
-             * //////////////////////////////////////////
-             */
+    root: true,
 
-            /**
-             * Selector nesnesi içerisinde yüklenmesi gereken alanları yükleyelim
-             * Buradaki yükleme işlemi before ve init methodlarının çağrılarak Kakao.result nesnesi içerisine yüklenmesi
-             * Kakao.result nesnesine yüklenen veriler sayfada oluşturulacak <style></style> nesnesine aktarılacaktır
-             * Şimdi aşağıda sırasıyla işlemleri başlatıyoruz
-             */
+    children: true,
 
-            Kakao._for(Kakao.selectors, function(i, v) {
+    each: true,
 
-                //Before methodu varsa ve each değeriyle sorgulama işlemine alınmak isteniyorsa
-                if (v.before && v.each)
-                    v.before();
-
-                //Sayfa ve dosya yüklendiğinde çalıştırılacak veya yapılacak işlemler. Eğer init methodu varsa çalışırır.
-                if (v.init);
-                window._listen('load', v.init);
-
-            })
-
-
-            /**
-             * Selector nesnesi içerisinde bulunan seçici adlarıyla, screens nesnesi içerisindeki değerler birleştirilerek, aşağıdaki örnek çıktılar sayfa boyutlarına göre oluşturulmaktadır
-             * 
-             * Örnek 'tab' screen çıktısı:
-             * 
-             * @media screen and (max-width:980px){
-             *  .map.this.tab1,.map.in.tab-1>*,.inline.this.tab1,.inline.in.tab-1>*,.table.this.tab1,.table.in.tab-1>*{width:8.3333%}
-                .map.this.tab2,.map.in.tab-2>*,.inline.this.tab2,.inline.in.tab-2>*,.table.this.tab2,.table.in.tab-2>*{width:16.6667%}
-                .map.this.tab3,.map.in.tab-3>*,.inline.this.tab3,.inline.in.tab-3>*,.table.this.tab3,.table.in.tab-3>*{width:25%}
-                .map.this.tab4,.map.in.tab-4>*,.inline.this.tab4,.inline.in.tab-4>*,.table.this.tab4,.table.in.tab-4>*{width:33.3333%}
-                .map.this.tab5,.map.in.tab-5>*,.inline.this.tab5,.inline.in.tab-5>*,.table.this.tab5,.table.in.tab-5>*{width:41.6667%}
-                .map.this.tab6,.map.in.tab-6>*,.inline.this.tab6,.inline.in.tab-6>*,.table.this.tab6,.table.in.tab-6>*{width:50%}
-                .map.this.tab7,.map.in.tab-7>*,.inline.this.tab7,.inline.in.tab-7>*,.table.this.tab7,.table.in.tab-7>*{width:58.3333%}
-                .map.this.tab8,.map.in.tab-8>*,.inline.this.tab8,.inline.in.tab-8>*,.table.this.tab8,.table.in.tab-8>*{width:66.6667%}
-                .map.this.tab9,.map.in.tab-9>*,.inline.this.tab9,.inline.in.tab-9>*,.table.this.tab9,.table.in.tab-9>*{width:75%}
-                .map.this.tab10,.map.in.tab-10>*,.inline.this.tab10,.inline.in.tab-10>*,.table.this.tab10,.table.in.tab-10>*{width:83.3333%}
-                .map.this.tab11,.map.in.tab-11>*,.inline.this.tab11,.inline.in.tab-11>*,.table.this.tab11,.table.in.tab-11>*{width:91.6667%}
-                .map.this.tab12,.map.in.tab-12>*,.inline.this.tab12,.inline.in.tab-12>*,.table.this.tab12,.table.in.tab-12>*{width:100%}
-                .tab-hidden{display:none !important}
-                .tab-show{display:block !important}
-                .tab-textcenter{text-align:center !important}
-                .tab-textright{text-align:right !important}
-                .tab-textleft{text-align:left !important}
-                .tab-left{margin-left:0; margin-right:auto;}
-                .tab-center{margin-left:auto; margin-right:auto; display:inherit !important;}
-                .tab-right{margin-left:auto; margin-right:0}
-                }
-             */
-
-            //Tüm ekran boyutlarını tek tek ele alıyoruz
-            Kakao._for(Kakao.screens, function(a, b, key) {
-
-                //İşlemler sırasında oluşturululan @media screen değerleri buraya kaydedilecek
-                var cache = [];
-
-                //Piece değeri kadar döngü oluşturur. Bilindiği üzere Piece değeri sayfada oluşturulacak maksimum parça değerini simgeler
-                for (var n = 1; n <= Kakao.piece; n++) {
-
-                    var z = [];
-
-                    /**
-                     * Seçicileri bir döngü içerisinde ele alıp
-                     * Gelen her bir değeri this ve in işaretleyicilerle birleştiriyoruz
-                     * 
-                     * Örnek çıktı:
-                     * .map.this.web1
-                     */
-
-                    for (var i in Kakao.selectors) {
-                        var x = Kakao.selectors[i];
-                        //console.log(x);
-                        if (x.root && x.selector)
-                            z.push(Kakao.format('.{0}.this.{1}{2}', i, key, n));
-
-                        if (x.children && x.selector)
-                            z.push(Kakao.format('.{0}.in.{1}-{2}>*', i, key, n));
-
-                    } //maps
-
-
-
-
-                    /**
-                     * Z Array nesnesine eklenen çıktıyı formatlayarak yeni bir çıktı elde ediyoruz
-                     * 
-                     * Örnek çıktı:
-                     * .map.this.web1,.inline.this.web1,.table.this.web1{width:8.3333%}
-                     */
-
-
-                    cache.push(Kakao.format('{0}{width:{1}%}', z.join(','), Kakao.screenCalc(n)));
-                    //console.log(Kakao.format('{0}{width:{1}%}', z.join(','), screenCalc(n)));
-
-
-
-
-                } //piece
-
-
-
-
-
-
-
-                /**
-                 * Selector nesnemizde all diye bir alan tanımladık
-                 * Bu alan her bir screen değerinde oluşturulacak verileri simgeliyordu
-                 * Örneğin işlem sırasındaki screen adı 'web' olsun. Bu gelen değeri Selector.all nesnemizin before methoduna gönderiyoruz
-                 * O da bize 'web' ön etiketiyle beraber bu method içindeki CSS adlarını birleştirerek ilgili ekran boyutunun değerleri olarak işleme almaktadır.
-                 * 
-                 * örnek:
-                 * 'web' adı methoda gönderiliyor.
-                 * Çıktı:
-                 * web-hidden yada web-show, web-remove vs...
-                 */
-
-                Kakao.selectors.all.before(key, cache);
-
-
-
-
-
-                /**
-                 * Son olarak @media screen and ekran boyutumuzu oluşturuyoruz ve ilgili değerleri içerisine yüklüyoruz
-                 * 
-                 */
-                Kakao.result.push(Kakao.media.create(Kakao.screens[key], cache.join('')));
-
-
-
-            });
-
-            /**
-             * Sayfa üzerinde head kısmına <style></style> nesnesi oluşturuyoruz
-             * Oluşturulan nesne içerisine Kakao.result değişkeni içindeki değerleri aktarıyoruz 
-             */
-            var sty = Kakao.Dom.create('style');
-            sty.innerHTML = Kakao.result.join('');
-            document.head.appendChild(sty);
-
-
-            /**
-             * //////////////////////////////////////////
-             * ////////// SELECTOR END //////////////////
-             * //////////////////////////////////////////
-             */
-
-
-
-        },
-        /**
-         * Selector nesnesinde sayfa yüklendiği anda yapılacak işlemler burada yapılacak
-         * 
-         */
-        onload: function() {
-
-            var d = document.querySelectorAll('.showinit');
-
-            if (d && d.length > 0) {
-                Kakao._for(d, function(a, b) {
-                    b._removeClass('showinit');
-                });
-            }
-        }
+    before: function() {
+        Kakao.result.push('.inline.this,.inline.in>*{display:inline-block; vertical-align:top;margin-right:-4px; padding:2px;}');
+        Kakao.result.push('.inline.in::before,.inline.in::after{content:" "; display:block; clear:both;}');
+        Kakao.result.push('.middle-this{vertical-align:middle !important;}');
+        Kakao.result.push('.middle-in>*{vertical-align:middle !important;}');
+        Kakao.result.push('.middle-all,.middle-all>*{vertical-align:middle !important;}');
     }
 
-}
+
+});
+Selectors.add('table', {
+
+    selector: false,
+
+    root: false,
+
+    children: false,
+
+    each: false,
+
+    before: function() {
+        Kakao.result.push('.table.this,.table.in{display:table;}');
+        Kakao.result.push('.table.in>*{display:table-cell; padding:2px;}');
+    }
+});
+Selectors.add('float', {
+
+
+    selector: true,
+
+    root: true,
+
+    children: true,
+
+    each: true,
+
+    before: function() {
+
+        Kakao.result.push('.float.this,.float.in>*{float:left; margin:0; padding:2px;}');
+        Kakao.result.push('.float.group::before,.float.group::after,.float.in::before,.float.in::after{content:" "; display:block; clear:both;}');
+        Kakao.result.push('.float-this,.float-in>*,.float-all,.float-all>*{float:left;}');
+    }
+
+
+
+});
 /*
  * İşaretleyiciler
  * Hangi nesneler üzerinde işlem yapılacağına dair fikir verir
  * Nesne üzerinde eklendiğinde tek başına herhangi bir etkileşimleri bulunmamaktadır
  */
 
-Kakao.markers = {
-
-    names: {
-        'all': [],
-        'this': [],
-        'in': [],
-        'any': false
-    },
+var Markers = (function Markers() { return Markers })()
 
 
+Markers.Names = {
+    'all': [],
+    'this': [],
+    'in': [],
+    'any': false
+}
 
-    'constructor': {
 
-        run: function() {
+Markers.constructor = {}
 
-            for (var i in Kakao.screens) {
+Markers.constructor.run = function run() {
 
-                for (var n = 1; n <= Kakao.piece; n++) {
-                    //This
-                    Kakao.markers.names['this'].push(i + n);
-                    //In
-                    Kakao.markers.names['in'].push(i + '-' + n);
-                }
-            }
+    for (var i in Screens.Values) {
 
-            //Defaults
-            Kakao.markers.names.this.push('this');
-            Kakao.markers.names.this = Kakao.markers.names.this.concat(Kakao.getOnlySelectors());
-
-            Kakao.markers.names.in.push('in');
-            Kakao.markers.names.in = Kakao.markers.names.in.concat(Kakao.getOnlySelectors());
-
-            Kakao.markers.names.all = Kakao.markers.names.all.concat(Kakao.markers.names.this, Kakao.markers.names.in);
-
+        for (var n = 1; n <= Screens.Piece; n++) {
+            //This
+            Markers.Names['this'].push(i + n);
+            //In
+            Markers.Names['in'].push(i + '-' + n);
         }
     }
 
+    //Defaults
+    Markers.Names.this.push('this');
+    Markers.Names.this = Markers.Names.this.concat(Selectors.getOnlySelectors());
+
+    Markers.Names.in.push('in');
+    Markers.Names.in = Markers.Names.in.concat(Selectors.getOnlySelectors());
+
+    Markers.Names.all = Markers.Names.all.concat(Markers.Names.this, Markers.Names.in);
+
 }
-Kakao.grid = {
 
-    /**
-     * Row nesneleri içerisinde yeni column nesneler oluşturmaktadır
-     */
-    createCol: function(a) {
-        var e = Kakao.Dom.create('div');
-        Kakao.grid.createLabel(a, e);
-        e.appendChild(a);
-        return e;
-    },
 
-    /**
-     * İstenen root nesne içerisinde label nesnesi ve içeriği oluşturuluyor
-     */
-    createLabel: function(a, target) {
-        //Label değeri varsa işleme al
-        var lbl = a._attr('data-label');
-        if (lbl) {
+Plugins.add(Markers);
+var Grids = (function Grids() {
 
-            //Label oluştur
-            var c = Kakao.Dom.create('label')
-                ._class('data-col-label')
-                ._removeAttr('data-label');
 
-            //Label değerini innerHTML olarak ata
-            c.innerHTML = lbl;
+    return Grids;
+})()
 
-            //Label nesnesini istenen root nesnesine ata
-            target.appendChild(c);
+
+/**
+ * Row nesneleri içerisinde yeni column nesneler oluşturmaktadır
+ */
+Grids.createCol = function(a) {
+    var e = document.createElement('div');
+    Grids.createLabel(a, e);
+    e.appendChild(a);
+    return e;
+}
+
+
+
+/**
+ * İstenen root nesne içerisinde label nesnesi ve içeriği oluşturuluyor
+ */
+Grids.createLabel = function(a, target) {
+
+    //Label değeri varsa işleme al
+    var lbl = a._attr('data-label');
+    if (lbl) {
+
+        //Label oluştur
+        var c = document.createElement('label')
+            ._class('data-col-label')
+            ._removeAttr('data-label');
+
+        //Label değerini innerHTML olarak ata
+        c.innerHTML = lbl;
+
+        //Label nesnesini istenen root nesnesine ata
+        target.appendChild(c)
+    }
+}
+
+
+
+
+
+
+/**
+ * Belirtilen nesneye ait çocuk nesnelerin sahip olduğu data-screen değerleri bu alanda işlenerek
+ * parent nesnesine ilgili değerler uygulanmaktadır
+ */
+Grids.addScreen = function(children) {
+    //Her bir cocuk nesnesinde data-screen değerini aranıyor
+    for (var n = 0; n < children.length; n++) {
+
+        //İlgili sıradaki nesneyi alır
+        var chl = children[n];
+
+        //Nesne içinde data-screen ifadesi var mı bakar
+        var datascreen = chl.children[chl.children.length - 1]._attr('data-screen');
+
+        //Eğer data screen ifadesi yoksa yani boşsa varsayılan olarak sutun sayısı kadar web değeri atar
+        if (!datascreen) {
+            children[n]._class('all' + Screens.Piece / children.length)
         }
-    },
+        //Eğer data screen özelliği bir değere sahipse ve string ifade barındırıyorsa
+        else if (datascreen && typeof datascreen === 'string') {
+            children[n]._class(datascreen.split(' '));
+        }
+    }
+}
 
-    /**
-     * Belirtilen nesneye ait çocuk nesnelerin sahip olduğu data-screen değerleri bu alanda işlenerek
-     * parent nesnesine ilgili değerler uygulanmaktadır
-     */
-    addScreen: function(children) {
 
-        //Her bir cocuk nesnesinde data-screen değerini aranıyor
-        for (var n = 0; n < children.length; n++) {
 
-            //İlgili sıradaki nesneyi alır
-            var chl = children[n];
 
-            //Nesne içinde data-screen ifadesi var mı bakar
-            var datascreen = chl.children[chl.children.length - 1]._attr('data-screen');
 
-            //Eğer data screen ifadesi yoksa yani boşsa varsayılan olarak sutun sayısı kadar web değeri atar
-            if (!datascreen) {
-                children[n]._class('web' + piece / children.length)
+
+
+//Children nesnelere toplu değer atamaları yapılır
+Grids.addClassToChildren = function(children) {
+    for (var i = 0; i < children.length; i++) {
+        children[i]._class(Filter.toArray(arguments, 1));
+    }
+}
+
+
+Grids.constructor = {};
+
+
+
+Grids.constructor.onload = function onload() {
+
+
+    var _grids = document.querySelectorAll('[data-grid]');
+
+    if (!_grids || _grids.length == 0) return;
+
+    for (var index = 0; index < _grids.length; index++) {
+
+        var a = _grids[index];
+
+
+        //İlgili nesne içerisindeki maksimum satır sayısı
+        var maxRowCount = 0;
+
+        //İlgili nesnenin içindeki çocuk nesne sayısı
+        var children = a.children;
+
+        //Çocuk nesnelerin sayısı
+        var length = children.length;
+
+        //Oluşturulacak her bir grid satır nesnesi
+        var rows = document.createElement('div')._class('data-row');
+
+        var colCount = 0;
+
+        //Bir döngü içerisinde tüm cocuk nesnelerin işleyisi bitene kadar 0'ıncı çocuk nesnesi seçilerek devam eder
+        while (length > 0) {
+
+            //Sıradaki çocuk nesnesi. Her seferinde 0 index numaraları nesne seçilir.
+            //Çünkü 0'ıncı nesne işlemi bittiğinde, nesne listeden kaldırılır ve yeni nesneye aktarılır.
+            //Böyle olunca 0'ıncı nesne otomatik olarak değişmiş olacak
+            var item = children[0];
+
+            //Sıradaki nesnenin row numarasını al
+            var rowNumber = parseInt(item._attr('data-row'));
+
+            //Row attribute özelliğini kaldır
+            item._removeAttr('data-row');
+
+            //İşlenen tek bir satıra ait sütun sayısı değerini bir arttır
+            colCount++;
+
+            //Gelen row değeri maxRowCount değerinden büyükse yeni bir satır oluştur
+            if (rowNumber > maxRowCount) {
+
+                //Row değerini max değerine eşitle
+                maxRowCount = rowNumber;
+
+                //Yeni bir satır oluşturmadan önce işlediğin tüm nesnelere sabit tanımlı sınıf isimlerini ata
+                Grids.addClassToChildren(rows.children, 'float', 'this', 'grid-col');
+
+                //İşlenen nesneleri grid nesnesi içine yeni satır olarak ekle
+                a.appendChild(rows);
+
+
+                //İlgili nesnede data-screen değerleri varsa uygular, eğer yoksa sütun sayısına eşitler
+                Grids.addScreen(rows.children);
+
+
+                //Sonraki satır için yeni row oluştur
+                rows = document.createElement('div')._class('data-row');
+
+                //İşlenen sütun sayısını sıfırla
+                colCount = 0;
             }
-            //Eğer data screen özelliği bir değere sahipse ve string ifade barındırıyorsa
-            else if (datascreen && typeof datascreen === 'string') {
-                children[n]._class(datascreen.split(' '));
+
+            //Hangi satırdaysak, ilgili seçili nesneyi sıradaki satır nesnesine aktar.
+            rows.appendChild(Grids.createCol(item));
+
+            //İşlem bittikten sonra, bu nesne ile ilişkisinin bittiğine dair length değeri 1 eksiltiliyor
+            length--;
+
+            //Eğer length değeri 0 ise ve eğer işlenmiş 1,2 kayıt varsa da onları da ekle
+            if (length == 0) {
+
+                Grids.addClassToChildren(rows.children, 'float', 'this', 'grid-col');
+
+                //İlgili nesnede data-screen değerleri varsa uygular, eğer yoksa sütun sayısına eşitler
+                Grids.addScreen(rows.children);
+
+                a.appendChild(rows);
+
+                a.classList.remove('showinit');
             }
         }
-    },
-
-    //Children nesnelere toplu değer atamaları yapılır
-    addClassToChildren: function(children) {
-        for (var i = 0; i < children.length; i++) {
-            children[i]._class(Kakao.filter.toArray(arguments, 1));
-        }
-    },
 
 
-    'constructor': {
-
-        onload: function() {
-
-            var _grids = document.querySelectorAll('[data-grid]');
-            if (!_grids || _grids.length == 0) return;
-
-            foreach(_grids, function(index, a, c) {
-
-                //İlgili nesne içerisindeki maksimum satır sayısı
-                var maxRowCount = 0;
-
-                //İlgili nesnenin içindeki çocuk nesne sayısı
-                var children = a.children;
-
-                //Çocuk nesnelerin sayısı
-                var length = children.length;
-
-                //Oluşturulacak her bir grid satır nesnesi
-                var rows = Kakao.Dom.create('div')._class('data-row');
-
-                var colCount = 0;
-
-                //Bir döngü içerisinde tüm cocuk nesnelerin işleyisi bitene kadar 0'ıncı çocuk nesnesi seçilerek devam eder
-                while (length > 0) {
-
-                    //Sıradaki çocuk nesnesi. Her seferinde 0 index numaraları nesne seçilir.
-                    //Çünkü 0'ıncı nesne işlemi bittiğinde, nesne listeden kaldırılır ve yeni nesneye aktarılır.
-                    //Böyle olunca 0'ıncı nesne otomatik olarak değişmiş olacak
-                    var item = children[0];
-
-                    //Sıradaki nesnenin row numarasını al
-                    var rowNumber = parseInt(item._attr('data-row'));
-
-                    //Row attribute özelliğini kaldır
-                    item._removeAttr('data-row');
-
-                    //İşlenen tek bir satıra ait sütun sayısı değerini bir arttır
-                    colCount++;
-
-                    //Gelen row değeri maxRowCount değerinden büyükse yeni bir satır oluştur
-                    if (rowNumber > maxRowCount) {
-
-                        //Row değerini max değerine eşitle
-                        maxRowCount = rowNumber;
-
-                        //Yeni bir satır oluşturmadan önce işlediğin tüm nesnelere sabit tanımlı sınıf isimlerini ata
-                        Kakao.grid.addClassToChildren(rows.children, 'inline', 'this', 'grid-col');
-
-                        //İşlenen nesneleri grid nesnesi içine yeni satır olarak ekle
-                        a.appendChild(rows);
-
-                        //İlgili nesnede data-screen değerleri varsa uygular, eğer yoksa sütun sayısına eşitler
-                        Kakao.grid.addScreen(rows.children);
+    }
 
 
-                        //Sonraki satır için yeni row oluştur
-                        rows = Kakao.Dom.create('div')._class('data-row');
+    Listener.remove(window, 'load', Grids.constructor.onload);
 
-                        //İşlenen sütun sayısını sıfırla
-                        colCount = 0;
-                    }
+}
 
-                    //Hangi satırdaysak, ilgili seçili nesneyi sıradaki satır nesnesine aktar.
-                    rows.appendChild(Kakao.grid.createCol(item));
 
-                    //İşlem bittikten sonra, bu nesne ile ilişkisinin bittiğine dair length değeri 1 eksiltiliyor
-                    length--;
 
-                    //Eğer length değeri 0 ise ve eğer işlenmiş 1,2 kayıt varsa da onları da ekle
-                    if (length == 0) {
+Plugins.add(Grids);
+var Groups = (function Groups() {
 
-                        Kakao.grid.addClassToChildren(rows.children, 'inline', 'this', 'grid-col');
+    //format : inline-web-6-6, inline-tab-12-12-5-1, float-tab-12-12
+    Groups.formatR = Regx('(' + Selectors.getOnlySelectors().join('|') + ')\\-(' + Keys(Screens.Values).join('|') + ')(\\-\\d{1,2})+')
 
-                        //İlgili nesnede data-screen değerleri varsa uygular, eğer yoksa sütun sayısına eşitler
-                        Kakao.grid.addScreen(rows.children);
+    return Groups;
+})();
 
-                        a.appendChild(rows);
-                    }
-                }
 
-            });
+Groups.applyChildren = function(objs, params, values) {
+
+    for (var i in objs) {
+        Groups.applyChild(objs[i], params, values);
+    }
+}
+
+
+
+
+
+Groups.applyChild = function(obj, params, values) {
+
+    /**
+     * Gelen sayısal değerleri öncelikle kontrol edeceğiz
+     * Eğer tek bir kayıt varsa, ilgili sayısal veriyi tüm alt nesnelere aynı şekilde uygulayacagız
+     * Eğer iki ve daha fazla sayı varsa ilgili sayının katları şeklinde alt nesnelere uygulayacağız
+     * Örneğin 2 tane sayısal kayıt geldiğini düşünelim
+     * [4,6]
+     * Örnek ilgili nesnemizin alt nesneleri de 5 adet div nesnesi olsun
+     * O halde ikişerli olarak her nesneye ilgili sayıları uygulayacağız
+     * 1'nci div 4 değerini,
+     * 2'nci div 6 değerini,
+     * 3'üncü div 4 değerini,
+     * 4'ünvü div 6 değerini gibi iki ve katları şeklinde uygulanmıştır
+     * Uygulanacak sayı değeri sayısı ilgili nesnelerin sayısından az ise tekrar başa dönerek sırasdaki nesneye sıradaki sayı değerini uygular
+     * 
+     */
+
+
+    if (obj == null) return;
+    if (obj.children == null) return;
+    if (obj.children.length == 0) return;
+
+    var startIndex = -1;
+
+    for (var n = 0, length = obj.children.length; n < length; n++) {
+
+        if (startIndex < values.length - 1)
+            startIndex++;
+        else
+            startIndex = 0;
+
+        //Örnek web12
+        var dataClass = params[2] + values[startIndex];
+
+        //Örnek web12, this, inline sınıf değerlerinin hepsi atanıyor
+        obj.children[n]._class(dataClass, 'this', params[1]);
+
+        //Sadece float özelliğinde
+        if (params[1] == 'float') {
+            obj._class('float', 'group');
         }
 
     }
+
 }
-Kakao.groups = {
 
 
-    //format : web-inline-6-6, tab-inline-12-12-5-1, tab-map-12-12
-    formatR: Kakao.regx('(' + Kakao.objects.keys(Kakao.screens).join('|') + ')\\-(' + Kakao.getOnlySelectors().join('|') + ')(\\-\\d{1,2})+'),
 
 
-    applyChildren: function(objs, params, values) {
-        Kakao._for(objs, function(a, b, c) {
-            Kakao.groups.applyChild(b, params, values);
-
-        });
-    },
 
 
-    applyChild: function(obj, params, values) {
+
+
+/**
+ * Bulunan match değerlerini ilgili nesnenin alt nesnelerine uygular
+ */
+
+Groups.applyMatch = function(match, obj) {
+
+
+    for (var i in match) {
+
+        var b = match[i];
 
         /**
-         * Gelen sayısal değerleri öncelikle kontrol edeceğiz
-         * Eğer tek bir kayıt varsa, ilgili sayısal veriyi tüm alt nesnelere aynı şekilde uygulayacagız
-         * Eğer iki ve daha fazla sayı varsa ilgili sayının katları şeklinde alt nesnelere uygulayacağız
-         * Örneğin 2 tane sayısal kayıt geldiğini düşünelim
-         * [4,6]
-         * Örnek ilgili nesnemizin alt nesneleri de 5 adet div nesnesi olsun
-         * O halde ikişerli olarak her nesneye ilgili sayıları uygulayacağız
-         * 1'nci div 4 değerini,
-         * 2'nci div 6 değerini,
-         * 3'üncü div 4 değerini,
-         * 4'ünvü div 6 değerini gibi iki ve katları şeklinde uygulanmıştır
-         * Uygulanacak sayı değeri sayısı ilgili nesnelerin sayısından az ise tekrar başa dönerek sırasdaki nesneye sıradaki sayı değerini uygular
+         * b parametresinden gelen değeri exec ile grouplara ayıralım
          * 
+         * İlgili nesne sınıf değerleri içinde istediğimiz gibi kayıt/kayıtlar mevcut. O halde işleyelim
+         * Bulunan değerin web-inline-6-6 olduğunu varsayarak işleyelim
+         * Exec ile bize aşağıdaki gibi bir çıktı verecek
+         * group0 : web-inline-6-6
+         * group1 : web
+         * group2 : inline
+         * group3 : 6
          */
 
-        var startIndex = -1;
+        var params = Groups.formatR.exec(b);
 
-        var length = obj.children.length;
+        //Regex nesne formatımız sabit olduğundan, yani new RegExp demediğimiz için formatın sorgu sırasını 0'a çekiyoruz
+        Groups.formatR.lastIndex = 0;
 
-        for (var n = 0; n < length; n++) {
+        //Eğer formata uygun değilse iptal et
+        if (!params) return;
 
-            if (startIndex < values.length - 1)
-                startIndex++;
-            else
-                startIndex = 0;
+        //Sayısal değerleri almak için - işaretinden parçalayalım
+        var values = params[0].split('-');
 
-            //Örnek web12
-            var dataClass = params[1] + values[startIndex];
+        //Sayısal değerleri alalım. 2. index kaydından itibaren tüm kayıtları alalım
+        values = values.slice(2, values.length);
 
-            //Örnek web12, this, inline sınıf değerlerinin hepsi atanıyor
-            obj.children[n]._class(dataClass, 'this', params[2]);
+        //Secici ifadeki silelim *-inline-*-*-* vs
+        obj._removeClass(params[0]);
+
+        //Next all özelliğini kontrol ederek kaç nesneyi daha etkileyip etkilemeyeceğini bulalım
+        var next = obj._attr('data-next')
+
+        /**
+         * Tek bir nesneden fazla nesnede etkileşim olacağını anlıyoruz
+         * Şimdi kaç nesnenin etkileceğini bulup işlemi yaptıralım
+         */
+
+        if (!next) {
+            obj._removeAttr('data-next');
+            Groups.applyChild(obj, params, values);
         }
 
+        //Belirli aralıktaki nesnelere uygulama yapalım
+        else if (next) {
 
-    },
+            //* değeri varsa tüm nesneleri seçelim
+            if (next && next === '*')
+                next = obj.parentNode.children.length;
 
-    /**
-     * Bulunan match değerlerini ilgili nesnenin alt nesnelerine uygular
-     */
+            //Değilse sadece belirli sayı aralığındakileri seçelim
+            else if (next && isNum(next))
+                next = parseInt(next);
 
-    applyMatch: function(match, obj) {
+            //0dan büyük bir değer olmalı
+            if (next >= 0) {
+
+                var children = Array.prototype.slice.call(obj.parentNode.children);
+
+                //Şimdi bizim nesnemizin bu ana grup içinde bulunduğu pozisyonun index numarasını al
+                var currentIndex = children.indexOf(obj);
+
+                //Şimdi de nesnemizin bulunduğu pozisyondan kaç tanesi bu durumdan etkilenecekse, bu grubun listesini ver
+                var t = children.slice(currentIndex, currentIndex + parseInt(next) + 1);
+
+                Groups.applyChildren(t, params, values);
+
+            }
+        }
+
+    }
+
+}
 
 
-        Kakao._for(match, function(a, b, c) {
+
+
+
+//constructor
+Groups.constructor = {};
+
+
+
+
+
+
+//Sayfa yüklendiğinde çalıştırılacak method
+Groups.constructor.onload = function() {
+
+
+    //web, tab, mob, min
+    var keys = Keys(Screens.Values);
+
+    //Format : [class*="-float-"], [class*="-inline-"], [class*="-table-"]
+    var queryvalue = Format.Repeat('[class*="{}-"]', Selectors.getOnlySelectors()).join(',');
+
+    //Sayfa üzerinde ki -float-, -inline-, -table- gibi sınıf adlarına sahip nesneleri seçer
+    var selectGroups = document.querySelectorAll(queryvalue);
+
+
+    if (selectGroups && selectGroups.length > 0) {
+
+        //Bulunan her bir nesneyi tek tek işleme al
+
+        for (var i = 0, len = selectGroups.length; i < len; i++) {
+
+            var b = selectGroups[i];
+            //-float-, -inline-, -table- gibi değerlerle nesneler bulunmuş olabilir ama yeterli değil
+            //ilgili nesnenin sınıf adlarında tam olarak bizim istediğimiz formatta bir sınıf adı varsa işleme alacağız
+            var match = b.className.match(Groups.formatR);
+
+            //Eğer hiç bulunamamışsa bu nesne bize uygun değil demektir
+            if (match == null) return;
+
+
+            //İşlem yapıldığına dair işaret koyalım
+            b.groupMatch = match;
+
+
+            b.groupTrigger = function() {
+                Groups.applyMatch(match, b);
+            }
+
+            //İlgili nesnenin bağlı olduğuğu parent nesnesine group ibaresi ekleyelim
+            b.parentNode.groups = true;
 
             /**
-             * b parametresinden gelen değeri exec ile grouplara ayıralım
+             * Eğer gelen bir array liste varsa ve değer/değerler bulunmuşsa. Aşağıdaki gibi bir örnek çıktı verecektir
              * 
-             * İlgili nesne sınıf değerleri içinde istediğimiz gibi kayıt/kayıtlar mevcut. O halde işleyelim
-             * Bulunan değerin web-inline-6-6 olduğunu varsayarak işleyelim
-             * Exec ile bize aşağıdaki gibi bir çıktı verecek
-             * group0 : web-inline-6-6
-             * group1 : web
-             * group2 : inline
-             * group3 : 6
+             * Array[2]
+             *  0: "web-float-12-12"
+             *  1: "tab-float-12-12"
+             *  length: 2
+             *  __proto__: Array[0]
+             * 
+             * Tek bir nesne içinde 2 kayıt bulunduğunu varsayarak ilerliyoruz
              */
 
-            var params = Kakao.groups.formatR.exec(b);
+            Groups.applyMatch(match, b);
 
-            //Regex nesne formatımız sabit olduğundan, yani new RegExp demediğimiz için formatın sorgu sırasını 0'a çekiyoruz
-            Kakao.groups.formatR.lastIndex = 0;
-
-            //Eğer formata uygun değilse iptal et
-            if (!params) return;
-
-            //Sayısal değerleri almak için - işaretinden parçalayalım
-            var values = params[0].split('-');
-
-            //Sayısal değerleri alalım. 2. index kaydından itibaren tüm kayıtları alalım
-            values = values.slice(2, values.length);
-
-            //Secici ifadeki silelim *-inline-*-*-* vs
-            obj._removeClass(params[0]);
-
-            //Next all özelliğini kontrol ederek kaç nesneyi daha etkileyip etkilemeyeceğini bulalım
-            var next = obj._attr('data-next')
-
-            /**
-             * Tek bir nesneden fazla nesnede etkileşim olacağını anlıyoruz
-             * Şimdi kaç nesnenin etkileceğini bulup işlemi yaptıralım
-             */
-
-            if (!next) {
-                Kakao.groups.applyChild(obj, params, values);
-            }
-
-
-
-            //Belirli aralıktaki nesnelere uygulama yapalım
-            else if (next) {
-
-                //* değeri varsa tüm nesneleri seçelim
-                if (next && next === '*')
-                    next = obj.parentNode.children.length;
-
-                //Değilse sadece belirli sayı aralığındakileri seçelim
-                else if (next && Kakao.isNum(next))
-                    next = parseInt(next);
-
-                //0dan büyük bir değer olmalı
-                if (next >= 0) {
-
-
-                    var children = Array.prototype.slice.call(obj.parentNode.children);
-
-                    //Şimdi bizim nesnemizin bu ana grup içinde bulunduğu pozisyonun index numarasını al
-                    var currentIndex = children.indexOf(obj);
-
-                    //Şimdi de nesnemizin bulunduğu pozisyondan kaç tanesi bu durumdan etkilenecekse, bu grubun listesini ver
-                    var t = children.slice(currentIndex, currentIndex + parseInt(next) + 1);
-
-                    Kakao.groups.applyChildren(t, params, values);
-
-                }
-            }
-
-        });
-
-    },
-
-    'constructor': {
-        onload: function() {
-
-
-            //web, tab, mob, min
-            var keys = Kakao.objects.keys(Kakao.screens);
-
-            //Format : [class*="-map-"], [class*="-inline-"], [class*="-table-"]
-            var queryvalue = Kakao.repeat('[class*="-{}-"]', Kakao.getOnlySelectors()).join(',');
-
-            //Sayfa üzerinde ki -map-, -inline-, -table- gibi sınıf adlarına sahip nesneleri seçer
-            var selectGroups = document.querySelectorAll(queryvalue);
-
-            if (selectGroups && selectGroups.length > 0)
-            //Bulunan her bir nesneyi tek tek işleme al
-                Kakao._for(selectGroups, function(a, b, c) {
-
-                    //Sıradaki nesnenin sınıf adlarının listesini string olarak al
-                    var className = b.className || b.classList.value;
-
-                    //-map-, -inline-, -table- gibi değerlerle nesneler bulunmuş olabilir ama yeterli değil
-                    //ilgili nesnenin sınıf adlarında tam olarak bizim istediğimiz formatta bir sınıf adı varsa işleme alacağız
-
-                    var match = className.match(Kakao.groups.formatR);
-
-                    //Eğer hiç bulunamamışsa bu nesne bize uygun değil demektir
-                    if (match == null) return;
-
-
-                    //İşlem yapıldığına dair işaret koyalım
-                    b.groupMatch = match;
-                    b.groupTrigger = function() {
-                        Kakao.groups.applyMatch(match, b);
-                    }
-
-                    //İlgili nesnenin bağlı olduğuğu parent nesnesine group ibaresi ekleyelim
-                    b.parentNode.groups = true;
-
-                    /**
-                     * Eğer gelen bir array liste varsa ve değer/değerler bulunmuşsa. Aşağıdaki gibi bir örnek çıktı verecektir
-                     * 
-                     * Array[2]
-                     *  0: "web-map-12-12"
-                     *  1: "tab-map-12-12"
-                     *  length: 2
-                     *  __proto__: Array[0]
-                     * 
-                     * Tek bir nesne içinde 2 kayıt bulunduğunu varsayarak ilerliyoruz
-                     */
-
-                    Kakao.groups.applyMatch(match, b);
-
-                }) //foreach
 
             //Sayfa üzerinde yeni bir nesne oluşturulduğunda tetiklenecek methodumuz
-            document._listen('DOMNodeInserted', function(e) {
+            Listener.add(b, 'DOMNodeInserted', function(e) {
 
-                var tr = e.target.parentNode;
-                if (tr.groups) {
-                    Kakao._for(tr.children, function(a, b) {
-                        if (b.groupTrigger)
-                            b.groupTrigger();
-                    })
-                }
-
+                e.children._each(function(b) {
+                    if (b.groupTrigger)
+                        b.groupTrigger();
+                });
             });
 
+
+        }
+
+    }
+
+
+
+
+
+    Listener.remove(window, 'load', Groups.constructor.onload);
+
+}
+
+
+
+
+//Plugini yükle
+Plugins.add(Groups);
+/**
+ * 
+ *  Magnets
+ *  Magnet nesnesi ile nesnenin içeriğinde bulunan çocuk nesnelerini birbirine yapışarak dizilen formata getirmektedir
+ */
+
+
+
+//Plugin
+var Magnets = (function Magnets() {
+
+    Magnets.formatR = Regx('(' + Keys(Screens.Values).join('|') + ')\-(\\d{1,2})')
+
+    return Magnets;
+
+})()
+
+
+
+Magnets.custommagnet = function custommagnet(obj, screenSize) {
+
+
+    /**
+     * data-magnet özelliğine ait nesnemizin sayfa içinde kullanacağımız bazı özelliklerini bu alan içerisinde tutulacak
+     * 
+     */
+
+    var magset = {
+
+        //İşlem yapılan nesnenin bir magnet nesnesi olduğunu ve bir işlem yapıldığını belli eder
+        status: true,
+
+        //data-magnet nesnesinin sayfa yüklendiği anda kaç parçaya ayrıldığı bilgisini tutar
+        //Böylece sayfa her resize olduğunda buradaki değer ile parçalanması gereken değer aynıysa işlem yapılmayacak
+        piece: 0,
+
+        //CopyChildren
+        children: []
+    }
+
+    //İlgili çocuk nesnelerin sayısı
+    var length = obj.children.length;
+
+
+    //Çocuk nesneler kadar döngü oluştur
+    while (obj.children.length > 0) {
+        magset.children.push(obj.children[0].cloneNode(true));
+        obj.children[0].remove();
+    }
+
+    //setting nesnesini ilgili data-magnet nesnesine aktaralım
+    obj['magnetSetting'] = magset;
+
+    //Maksimum parca sayısı ör : 4
+    var max = Magnets.getMaxValues(screenSize, 'piece');
+
+    //sayfa yüklendiğinde çalıştırılacak olan method. Parametre olarak gönderilmiş değerler üzerinden işlem yapılacaktır
+    Magnets.triggerResize(magset.children, obj, screenSize, max);
+
+    //sayfa boyutlandığında çalıştırılacak olan method. Parametre olarak gönderilmiş değerler üzerinden işlem yapılacaktır
+
+    Listener.add(window, 'resize', function() {
+        Magnets.triggerResize(magset.children, obj, screenSize, max);
+    });
+
+    //Sayfa üzerinde yeni bir nesne oluşturulduğunda çalıştırılacak dinleyici
+    Listener.add(obj, 'DOMNodeInserted', function(item, root, e, f) {
+        Magnets.addNewMagnet(magset.children, item, root);
+    });
+
+
+    //Nesneye yeni magnetler eklemek için kullanılabilir method
+    obj['appendMagnet'] = function(params) {
+        if (isObj(params)) {
+
+            if (params.length > 1)
+                params._each(function(item) {
+                    Magnets.addNewMagnet(obj.magnetSetting.Children, item, obj)
+                });
+            else
+                Magnets.addNewMagnet(obj.magnetSetting.Children, params, obj)
+
         }
     }
+
 }
-Kakao.magnets = {
-
-    'formatR': Kakao.regx('(' + Kakao.objects.keys(Kakao.screens).join('|') + ')\-(\\d{1,2})'),
 
 
 
+
+
+
+/**
+ * Sayfa boyutlanırken, data-magnet alanının boyuta göre kaç parçaya ayrılacağı bilgisini hesaplayıp geriye döndürmektedir.
+ */
+Magnets.findScreenPiece = function findScreenPiece(obj) {
+    var result = 0;
+    for (var k in obj)
+        if (window.innerWidth < obj[k][0]) result = obj[k][1];
+    return result;
+}
+
+
+
+
+
+
+
+
+/**
+ * data-magnet nesnesinin children nesnelerinden hangisinin yüksekliğinin en kısa olduğunu bize verir
+ * Amacımız yüksekliği en kısa nesneye yeni nesneleri eklemek.
+ */
+
+
+Magnets.findLowestObject = function findLowestObject(parent) {
+
+    //  console.log(parent);
     /**
-     * Sayfa boyutlanırken ya da sayfa yüklendiğinde otomatik olarak ilgili nesneleri dizecek nesnemiz
+     * Dönüş tipi olarak gelen çocuk nesnelerinden ilk nesneyi seçiyoruz
+     * Ve ilk nesnenin yükseklik değerini referans alıyoruz
+     * eğer ilk nesne yüksekliği 0 ile zaten başka küçük değer olmayacağından
+     * ilk nesneyi geri döndürüyoruz.
+     * 
+     * Eğer 0 dan büyükse, tüm dilimlerin yüksekliklerini kontrol edip en küçük olanı alıyoruz
      */
-    'custommagnet': function custommagnet(obj, screenSize) {
 
-        //data-magnet özelliğine sahip nesnemiz
-        var n = obj;
+    var children = parent.children;
+    var e = children[0];
+    var result = children[0].offsetHeight;
+    if (result <= 0) return e;
 
-        n.magnetSetting = {
-
-            //İşlem yapılan nesnenin bir magnet nesnesi olduğunu ve bir işlem yapıldığını belli eder
-            status: true,
-
-            //data-magnet nesnesinin sayfa yüklendiği anda kaç parçaya ayrıldığı bilgisini tutar
-            //Böylece sayfa her resize olduğunda buradaki değer ile parçalanması gereken değer aynıysa işlem yapılmayacak
-            piece: 0
+    for (var i = 0, len = parent.magnetSetting.piece; i < len; i++) {
+        if (children[i].offsetHeight < result) {
+            result = children[i].offsetHeight;
+            e = children[i];
         }
-
-        //Nesneye ait alt çocuklar
-        var children = [];
-        var length = obj.children.length;
-        for (var q = 0; q < length; q++) {
-            children.push(obj.children[0].cloneNode(true));
-            obj.children[0].remove();
-        }
-        //Maksimum parca sayısı ör : 4
-        var max = Kakao.magnets.getMaxValues(screenSize, 'piece');
-
-        Kakao.magnets.triggerResize(children, obj, screenSize, max);
-
-        window._listen('resize', function() {
-            Kakao.magnets.triggerResize(children, obj, screenSize, max);
-        });
-
-        window._listen('DOMNodeInserted', function(a) { Kakao.magnets.addNewMagnet(children, a); })
-
-    },
+    }
 
 
-    //Ekran boyutuna göre alanın uygulanacak parça değerini verir
-    findScreenPiece: function(n) {
+    //@return
+    return e;
 
-        var s = 0;
-        for (var k in n)
-            if (window.innerWidth < n[k][0]) s = n[k][1];
-
-        return s;
-
-    },
+}
 
 
-    /**
-     * data-magnet nesnesinin children nesnelerinden hangisinin yüksekliğinin en kısa olduğunu bize verir
-     * Amacımız yüksekliği en kısa nesneye yeni nesneleri eklemek.
-     */
-    findLowestObject: function(o) {
+
+
+
+
+/**
+ * Belirttimiz ana nesne içindeki çocuk nesneleri siler
+ */
+Magnets.removeChildren = function removeChildren(obj) {
+    if (!obj) return;
+    while (obj.children.length > 0) {
+        obj.children[0].remove();
+    }
+}
+
+
+
+
+
+
+
+/**
+ * Sayfa üzerinde oluşturulan tüm nesneleri kontrol eder
+ * Eğer içeriğinde bizim şartlarımızı sağlayan özellikler varsa işlemi yapar.
+ * Örneğin sayfa üzerinde oluşturulmuş herhangi bir nesnenin parent nesnesi bir data-magnet mi
+ * ve oluşturulan yeni nesne üzerinde daha önce magnet işlemi yapıldımı kontrol ediliyor
+ * ve oluşturulan nesne magnet-item sınıf adına sahip değilse işleme alınıyor
+ */
+
+Magnets.addNewMagnet = function addNewMagnet(childrenList, item, parent) {
+
+    //Eklenmiş olan nesnenin parent nesnesinde magnet var mı
+    var mgSet = parent.magnetSetting;
+
+    //Varsa işlemi yap
+    if (mgSet && mgSet.status === true && !item.isMagnetAvaible && !item.dataMagnetItem) {
+
+        try {
+
+            //Yeni nesneyi klonla
+            // var cln = item.cloneNode(true);
+
+            item.isMagnetAvaible = true;
+
+            //Orjinali sil
+            //item.remove();
+
+            //Hafızaya ekle
+            mgSet.children.push(item);
+
+            //Son olarak da copyayı ekrana bastır
+            Magnets.findLowestObject(parent).appendChild(item);
+
+        } catch (ex) { console.log(ex); }
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+//Sayfa ilk yüklendiğinde ve ekran boyutlandırıldığında işleyecek method
+//Tüm işlemleri burada yapıyoruz
+Magnets.triggerResize = function triggerResize(children, obj, screenSize, max) {
+
+    var pieceCount = Magnets.findScreenPiece(screenSize);
+
+    //Ekran boyutlandırma sırasında parçalanma bilgisi değişirse uyguluyoruz
+    if (obj.magnetSetting.piece != pieceCount) {
 
         /**
-         * Dönüş tipi olarak gelen çocuk nesnelerinden ilk nesneyi seçiyoruz
-         * Ve ilk nesnenin yükseklik değerini referans alıyoruz
-         * eğer ilk nesne yüksekliği 0 ile zaten başka küçük değer olmayacağından
-         * ilk nesneyi geri döndürüyoruz.
+         * data-magnet nesnesi içinde oluşan çocuk nesne sayısı değerini
+         * data-magnet nesnemizin setting özelliğine bildiriyoruz
          * 
-         * Eğer 0 dan büyükse, tüm dilimlerin yüksekliklerini kontrol edip en küçük olanı alıyoruz
+         */
+        obj.magnetSetting.piece = pieceCount;
+
+        //data-magnet nesnesindeki tüm çocuk nesneleri temizleyelim
+        Magnets.removeChildren(obj);
+
+        /**
+         * data-magnet nesnesi icerisindeki tüm nesneleri sildikten sonra
+         * tekrardan istediğimiz parça sayısı kadar cocuk nesne oluşturuyoruz
+         */
+        for (var n = 0; n < pieceCount; n++) {
+            var u = document.createElement('div');
+            u['dataMagnetItem'] = 'v.0.1';
+            obj.appendChild(u);
+        }
+
+
+        /**
+         * Sayfa oluşturulurken bulunan nesneleri hafızaya kopyalamıstık.
+         * Kopyalanan bu nesneleri yeni oluşturduğumuz parcalara dağıtıyoruz
+         * Dağıtırken kullanılan mantık, en düşük yüksekliğe sahip nesneye sıradaki nesneyi aktarıyoruz
+         * 
          */
 
+        for (var c = 0; c < children.length; c++) {
+            var lowestHeightObj = Magnets.findLowestObject(obj);
+            lowestHeightObj.appendChild(children[c]);
 
-
-        var e = o[0];
-        var result = o[0].offsetHeight;
-        if (result <= 0) return e
-
-        for (var i in o) {
-            if (o[i].offsetHeight < result) {
-                result = o[i].offsetHeight;
-                e = o[i];
-            }
+            if (c == children.length - 1)
+                obj.classList.remove('showinit');
         }
 
-        //@return
-        return e;
-    },
-
-    /**
-     * Belirttimiz ana nesne içindeki çocuk nesneleri siler
-     */
-    removeChildren: function(o) {
-        if (!o) return;
-        while (o.children.length > 0) {
-            o.children[0].remove();
-        }
-    },
-
-
-    /**
-     * Sayfa üzerinde oluşturulan tüm nesneleri kontrol eder
-     * Eğer içeriğinde bizim şartlarımızı sağlayan özellikler varsa işlemi yapar.
-     * Örneğin sayfa üzerinde oluşturulmuş herhangi bir nesnenin parent nesnesi bir data-magnet mi
-     * ve oluşturulan yeni nesne üzerinde daha önce magnet işlemi yapıldımı kontrol ediliyor
-     * ve oluşturulan nesne magnet-item sınıf adına sahip değilse işleme alınıyor
-     */
-    addNewMagnet: function(childrenList, item) {
-
-        //Eklenmiş olan nesnenin parent nesnesinde magnet var mı
-        var parent = item.target.parentNode;
-
-        var mgSet = parent.magnetSetting;
-
-        //Varsa işlemi yap
-        if (mgSet && mgSet.status === true && !item.target.isMagnetAvaible && !item.target.dataMagnetItem) {
-
-
-            try {
-
-                var length = parent.children.length - 1;
-
-                //Yeni nesneyi klonla
-                var cln = item.target.cloneNode(true);
-
-                cln.isMagnetAvaible = true;
-
-                //Orjinali sil
-                item.target.remove();
-
-                //Hafızaya ekle
-                childrenList.push(cln);
-
-                //Son olarak da copyayı ekrana bastır
-                Kakao.magnets.findLowestObject(parent.children).appendChild(cln);
-
-            } catch (ex) {}
-        }
-    },
-
-
-    //Sayfa ilk yüklendiğinde ve ekran boyutlandırıldığında işleyecek method
-    //Tüm işlemleri burada yapıyoruz
-    triggerResize: function(children, obj, screenSize, max) {
-
-
-
-        var pieceCount = Kakao.magnets.findScreenPiece(screenSize);
-
-        //Ekran boyutlandırma sırasında parçalanma bilgisi değişirse uyguluyoruz
-        if (obj.magnetSetting.piece != pieceCount) {
-
-
-            /**
-             * data-magnet nesnesi içinde oluşan çocuk nesne sayısı değerini
-             * data-magnet nesnemizin setting özelliğine bildiriyoruz
-             * 
-             */
-            obj.magnetSetting.piece = pieceCount;
-
-            //data-magnet nesnesindeki tüm çocuk nesneleri temizleyelim
-            Kakao.magnets.removeChildren(obj);
-
-
-            /**
-             * data-magnet nesnesi icerisindeki tüm nesneleri sildikten sonra
-             * tekrardan istediğimiz parça sayısı kadar cocuk nesne oluşturuyoruz
-             */
-            for (var n = 0; n < pieceCount; n++) {
-                var u = Kakao.Dom.create('div');
-                u['dataMagnetItem'] = 'v.0.1';
-                obj.appendChild(u);
-            }
-
-
-
-            /**
-             * Sayfa oluşturulurken bulunan nesneleri hafızaya kopyalamıstık.
-             * Kopyalanan bu nesneleri yeni oluşturduğumuz parcalara dağıtıyoruz
-             * Dağıtırken kullanılan mantık, en düşük yüksekliğe sahip nesneye sıradaki nesneyi aktarıyoruz
-             * 
-             */
-            for (var c = 0; c < children.length; c++) {
-                var lowestHeightObj = Kakao.magnets.findLowestObject(obj.children);
-                lowestHeightObj.appendChild(children[c]);
-            }
-
-
-        }
-
-    },
-
-
-
-
-
-    //İstediğimiz alanın maksimum değere sahip kaydını alalım
-    //En fazla kaç parçaya böleceğimize dair bilgiyi almış olacağız
-    getMaxValues: function(values, name) {
-
-        var max = 0;
-        for (var i in values) {
-            if (i[name] > max)
-                max = i[name];
-        }
-
-    },
-
-
-
-
-    /**
-     * Gelen string değer içerisinde istenen formattaki değerleri alıp dizi olarak geri döndürüyoruz
-     */
-    getMatches: function(values) {
-
-        //Eğer değer yoksa varsayılan olarak tek parçaya bölüyoruz
-        if (!values)
-            values = [
-                ['web-12', 'web', '12']
-            ];
-        else {
-            values = values.match(Kakao.magnets.formatR);
-            Kakao.magnets.formatR.lastIndex = 0;
-        }
-        return values;
-    },
-
-
-
-
-
-    /**
-     * 
-     * Gelen match edilmiş diziyi bizim istediğimiz formata çevirip geri döndürüyoruz
-     * 
-     */
-
-    getResizeValues: function(matches) {
-
-        //Ekran boyutlandırılırken kontrolün kolay sağlanması için özel nesne oluşturuyoruz
-        /**
-        * {
-            'web':{
-                    'piece':3,
-                    'size':2500
-                },
-            'tab':{
-                    'piece':2,
-                    'size':800
-                  }
-           }
-        * 
-        */
-
-        var customScreen = [];
-
-        //["web-4", "tab-6", "mob-12"]
-        for (var z = 0; z < matches.length; z++) {
-
-            //Group Şeklinde alalım
-            var scrGroupItem = Kakao.magnets.formatR.exec(matches[z]);
-            Kakao.magnets.formatR.lastIndex = 0;
-
-
-            //İptal edelim
-            if (!scrGroupItem || scrGroupItem.length == 0)
-                return null;
-
-
-            //Geliştirici tarafından verilen ekran boyut isimleri, screens nesnesi içindeki özellik adları kontrol ediliyor
-            if (Kakao.screens.hasOwnProperty(scrGroupItem[1])) {
-
-                var num = Kakao.screens[scrGroupItem[1]];
-                if (num == 0)
-                    num = 9999;
-
-                customScreen.push([num, Kakao.piece / scrGroupItem[2]]);
-
-            }
-
-        } //For
-
-        customScreen.sort(function(r, t) { return customScreen[t] - customScreen[r] });
-
-        return customScreen;
-
-    },
-
-
-
-
-
-    'constructor': {
-        onload: function() {
-
-            //Sayfa üzerinde ki tüm data-magnet nesnelerini seçelim
-            var datamagnet = document.querySelectorAll('[data-magnet]');
-
-            //Eğer bir nesne varsa işleme alalım
-            if (datamagnet != null)
-                if (datamagnet.length > 0) {
-
-                    //Bulunan nesne sayısı kadar döngü oluştur
-                    for (var i = 0; i < datamagnet.length; i++) {
-
-                        //data-magnet nesneleri sadece div olabilir
-                        if (datamagnet[i].tagName != 'DIV') {
-                            console.log('Data-magnet nesneleri sadece DIV elementi olabilir');
-                            return;
-                        };
-
-                        /**
-                         * Gelen screen boyutlarını alıyoruz
-                         * Alınan bu bilgileri screen nesnesindeki değerlerle karşılaştıracağız
-                         * Screen nesnesine uyan değerler alınıp, ekran boyutlandırması sırasında kullanacağız
-                         */
-
-                        var y = datamagnet[i];
-
-                        //Geliştirici tarafından verilen değerleri alalım
-                        var scr = y._attr('data-screen').toString();
-
-                        //["web-4", "tab-6", "mob-12"]
-                        var scrMatch = Kakao.magnets.getMatches(scr);
-
-                        //Nesnemize ilgili sınıf değerlerini ekleyelim
-                        y._class(scr.split(' '))._class(['in', 'map']);
-
-                        //Nesneden data-screen özelliğini kaldıralım
-                        y._removeAttr('data-screen');
-
-                        var p = Kakao.magnets.getResizeValues(scrMatch);
-
-                        if (p)
-                            new Kakao.magnets.custommagnet(y, p);
-
-
-                    }
-
-                }
-
-        }
     }
+
 }
+
+
+
+//İstediğimiz alanın maksimum değere sahip kaydını alalım
+//En fazla kaç parçaya böleceğimize dair bilgiyi almış olacağız
+Magnets.getMaxValues = function getMaxValues(values, name) {
+
+    var max = 0;
+    for (var i in values) {
+        if (i[name] > max)
+            max = i[name];
+    }
+
+}
+
+
+
+
+/**
+ * Gelen string değer içerisinde istenen formattaki değerleri alıp dizi olarak geri döndürüyoruz
+ */
+Magnets.getMatches = function getMatches(values) {
+
+    //Eğer değer yoksa varsayılan olarak tek parçaya bölüyoruz
+    if (!values)
+        values = [
+            ['all-12', 'all', '12']
+        ];
+    else {
+        values = values.match(Magnets.formatR);
+
+        Magnets.formatR.lastIndex = 0;
+    }
+    return values;
+}
+
+
+
+
+
+
+/**
+ * 
+ * Gelen match edilmiş diziyi bizim istediğimiz formata çevirip geri döndürüyoruz
+ * 
+ */
+
+Magnets.getResizeValues = function getResizeValues(obj) {
+
+    //Ekran boyutlandırılırken kontrolün kolay sağlanması için özel nesne oluşturuyoruz
+    /**
+    * {
+        'web':{
+                'piece':3,
+                'size':2500
+            },
+        'tab':{
+                'piece':2,
+                'size':800
+              }
+       }
+    * 
+    */
+
+    var customScreen = [];
+
+    var matches = obj.className.match(Magnets.formatR);
+    Magnets.formatR.lastIndex = 0;
+
+    //["web-4", "tab-6", "mob-12"]
+    for (var z = 0; z < matches.length; z++) {
+
+        //Group Şeklinde alalım
+        var scrGroupItem = Magnets.formatR.exec(matches[z]);
+        Magnets.formatR.lastIndex = 0;
+
+
+        //İptal edelim
+        if (!scrGroupItem || scrGroupItem.length == 0)
+            return null;
+
+
+        //Geliştirici tarafından verilen ekran boyut isimleri, screens nesnesi içindeki özellik adları kontrol ediliyor
+        if (Screens.Values.hasOwnProperty(scrGroupItem[1])) {
+
+            var num = Screens.Values[scrGroupItem[1]];
+            if (num == 0)
+                num = 9999;
+
+            customScreen.push([num, Screens.Piece / scrGroupItem[2]]);
+
+        }
+
+    } //For
+
+    customScreen.sort(function(r, t) { return customScreen[t] - customScreen[r] });
+
+    return customScreen;
+
+}
+
+
+//Constructor
+Magnets.constructor = {}
+
+
+
+//Sayfa yüklendiğinde işletilecek method
+Magnets.constructor.onload = function onload() {
+
+    //Sayfa üzerinde ki tüm data-magnet nesnelerini seçelim
+    var datamagnet = document.querySelectorAll('[data-magnet]');
+
+    //Eğer bir nesne varsa işleme alalım
+    if (datamagnet != null)
+        if (datamagnet.length > 0) {
+
+            //Bulunan nesne sayısı kadar döngü oluştur
+            for (var i = 0; i < datamagnet.length; i++) {
+
+                //data-magnet nesneleri sadece div olabilir
+                if (datamagnet[i].tagName != 'DIV') {
+                    console.log('Data-magnet nesneleri sadece DIV elementi olabilir');
+                    return;
+                };
+
+                /**
+                 * Gelen screen boyutlarını alıyoruz
+                 * Alınan bu bilgileri screen nesnesindeki değerlerle karşılaştıracağız
+                 * Screen nesnesine uyan değerler alınıp, ekran boyutlandırması sırasında kullanacağız
+                 */
+
+                var y = datamagnet[i];
+
+                //Geliştirici tarafından verilen değerleri alalım
+                //var scr = y._attr('data-screen').toString();
+
+                //["web-4", "tab-6", "mob-12"]
+                //var scrMatch = Magnets.getMatches(scr);
+
+
+                //Nesnemize ilgili sınıf değerlerini ekleyelim
+                //y._class(scr.split(' '))._class(['in', 'float']);
+
+                //Nesneden data-screen özelliğini kaldıralım
+                //y._removeAttr('data-screen');
+
+                var p = Magnets.getResizeValues(y);
+
+                if (p)
+                    new Magnets.custommagnet(y, p);
+
+
+            }
+
+        }
+
+
+
+
+    Listener.remove(window, 'load', Magnets.constructor.onload);
+
+}
+
+
+
+
+//Plugini ekleyelim
+Plugins.add(Magnets);
+var Clones = (function Clones() {
+
+
+    return Clones;
+})()
+
+
+
+Clones.constructor = {};
+
+
+//Tüm data-clone nesnelerini bulur
+Clones.findClones = function() {
+    return document.querySelectorAll("[data-clone]");
+}
+
+
+
+
+Clones.applyClone = function applyClone(sample, children) {
+
+    //Ben bana gönderdiğin örnekteki sınıf adlarını
+    //Children olarak gönderdiğin listedekilerin hepsine aktardım.
+    children._each(function(item) {
+        item._class(sample.classList);
+    });
+
+
+    //Şimdi ben örnek gönderdiğin nesnenin çocuk nesnelerini alıp
+    //Children nesnesindeki nesnelerin çocuk nesnelerini etkileyeceğim
+    for (var i = 0; i < sample.children.length; i++) {
+
+        /**
+         * Öncelikle, gelen örneğin çocuk nesnelerini tek tek ele almalıyım,
+         * Daha sonra, örnek almak istediğim sıradaki örneğin index numarasını bulmalıyım
+         * Örnek : sample.children[0,1,2,3,4,5...];
+         * o index numarasını children listesindeki her bir elemanın çocuklarında, o index numarasındaki aratmalıyım
+         * children.children[0,1,2,3,4,5....]
+         * Bunun için öncelikle bir methodum daha olmalı ve bu methoda sıradaki örneğimi göndermeli..
+         * daha sonra kontrol etmesini istediğim örneğimin index numarasını veriyorum
+         * bir de o index numarasını araması için yukarıdan gelen children nesnemi referans veriyorum
+         */
+        Clones.findPositionClones(sample.children[i], children, i);
+    }
+
+
+}
+
+Clones.findPositionClones = function findPositionClones(sample, children, index) {
+
+    //Gelen children listesi içindeki her bir nesnenin çocuk nesnelerinde
+    //sample nesnesinin index numarasına eşit olanlarını bulup 
+    //tekrar bir liste haline getireceğiz. Sonrasında en başa dönüp
+    //ilk sample tetiklemesini yaptığımız gibi applyClone methoduna yönlendiriyoruz
+    //Yani bir döngü içerisine sokuyoruz
+
+    var n = [];
+    children._each(function _each(item, i) {
+        n.push(item.children[index]);
+    });
+
+    Clones.applyClone(sample, n);
+}
+
+
+
+
+
+Clones.constructor.onload = function onload() {
+
+
+    /**
+     * Sayfa üzerindeki tüm data-clone özelliğine sahip nesneleri bulalım
+     */
+
+    var clone = Clones.findClones();
+
+    clone._each(function _each(item) {
+
+        var slice = item.parentNode.children;
+
+        try {
+            var x = item._attr('data-clone');
+            if (x)
+                x = parseInt(x);
+
+            if (x <= 1) {
+                x = 1;
+            }
+
+            slice = x;
+
+        } catch (error) {
+
+        }
+
+        //Her bir clone nesnesinden sonraki tüm nesneleri seçelim
+        var allOthers = Array.prototype.slice.call(item.parentNode.children);
+
+        //Şimdi bizim nesnemizin bu ana grup içinde bulunduğu pozisyonun index numarasını al
+        var currentIndex = allOthers.indexOf(item);
+
+        //Şimdi de nesnemizin bulunduğu pozisyondan kaç tanesi bu durumdan etkilenecekse, bu grubun listesini ver
+        var tList = allOthers.slice(currentIndex, currentIndex + slice + 1);
+
+        Clones.applyClone(item, tList);
+
+
+    });
+
+    Listener.remove(window, 'load', Clones.constructor.onload);
+
+}
+
+
+Plugins.add(Clones);
 /**
  * Geliştirici tarafından ayarlamalar verilirse bunları da ilgili datalara aktaralım
  */
@@ -2115,29 +2376,29 @@ try {
 
     var KS = document.querySelector('script[src*="Kakao.package"]');
     KS = KS ? eval(KS._attr('data-setting'))[0] : KakaoSetting;
-    if (KS && Kakao.isObj(KS)) {
+    if (KS && isObj(KS)) {
 
         try {
 
-            if (KS.Screens && Kakao.isObj(KS)) {
+            if (KS.Screens && isObj(KS)) {
                 for (var n in KS.Screens)
-                    if (Kakao.screens.hasOwnProperty(n))
-                        Kakao.screens[n] = parseInt(KS.Screens)
+                    if (Screens.Values.hasOwnProperty(n))
+                        Screens.Values[n] = parseInt(KS.Screens)
             }
 
-            if (KS.Piece && Kakao.isNum(KS.Piece))
-                Kakao.piece = KS.Piece;
+            if (KS.Piece && isNum(KS.Piece))
+                Screens.Piece = KS.Piece;
 
-            if (KS.Selectors && Kakao.isObj(KS.Selectors)) {
+            if (KS.Selectors && isObj(KS.Selectors)) {
 
                 for (var n in KS.Selectors)
-                    if (Kakao.selectors.hasOwnProperty(n) && !Kakao.selectors.lock) {
+                    if (Selectors.Values.hasOwnProperty(n) && !Selectors.Values.lock) {
                         var x = KS.Selectors[n];
-                        Kakao.selectors[n].selector = x;
-                        Kakao.selectors[n].root = x;
-                        Kakao.selectors[n].children = x;
-                        Kakao.selectors[n].children = x;
-                        Kakao.selectors[n].each = x;
+                        Selectors.Values[n].selector = x;
+                        Selectors.Values[n].root = x;
+                        Selectors.Values[n].children = x;
+                        Selectors.Values[n].children = x;
+                        Selectors.Values[n].each = x;
                     }
 
             }
@@ -2151,19 +2412,22 @@ try {
 
     }
 
+
+
+
 } catch (error) {}
 /**
- * Sayfa yüklenmeden önce yapılacak tüm işler ve çalıştırılacak methodlar
+ * Pluginleri çalıştıralım
  */
 
+for (var n = 0, len = Plugins.constructor.run.length; n < len; n++) {
+    Plugins.constructor.run[n]();
+}
 
-Kakao._for(Kakao, function(a, b, c) {
 
-    if (b && b.constructor) {
-        if (b.constructor.run)
-            b.constructor.run();
-        if (b.constructor.onload)
-            window._listen('load', b.constructor.onload);
-    }
+for (var n = 0, len = Plugins.constructor.onload.length; n < len; n++) {
+    Listener.add(window, 'load', Plugins.constructor.onload[n]);
+}
 
-}); //Foreach
+
+})()

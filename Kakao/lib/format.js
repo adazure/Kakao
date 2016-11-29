@@ -5,8 +5,8 @@
  * <noreq arguments>
  */
 
-Kakao.format = function format(f) {
 
+var Format = function Format(f) {
 
     /**
      * 
@@ -14,14 +14,16 @@ Kakao.format = function format(f) {
      * format('{0} tarihinde {1} tarafından yapıldı','10:11:2012','Kerem YAVUZ')
      */
 
-    //a : index, b: value
-    Kakao._for(arguments, function(a, b) {
-        f = f.replace(Kakao.regx('\\{' + (a - 1) + '\\}'), b);
-    }, 1)
+    for (var i = 1; i < arguments.length; i++) {
+        f = f.replace(Regx('\\{' + (i - 1) + '\\}'), arguments[i]);
+    }
 
     return f;
 
 }
+
+
+
 
 /**
  * <param format>
@@ -40,14 +42,18 @@ Kakao.format = function format(f) {
  * 
  */
 
-Kakao.repeat = function repeat(f) {
+
+
+Format.Repeat = function Repeat(f) {
 
     if (arguments.length <= 1) return;
-    var args = Kakao.isObj(arguments[1]) ? arguments[1] : Kakao.filter.toArray(arguments, 1);
+    var args = isObj(arguments[1]) ? arguments[1] : Filter.toArray(arguments, 1);
     var n = [];
-    Kakao._for(args, function(a, b, c) {
-        n.push(f.replace('{}', b));
-    });
+
+    for (var i in args) {
+        n.push(f.replace('{}', args[i]));
+    }
 
     return n;
+
 }
